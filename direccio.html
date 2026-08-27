@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projecte Pedagògic IGNITE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-blue:#D9E2E2;
+  --bg-beige:#EFE9DB;
+  --paper-raised:#F7F4EC;
+  --panel-blue:#E4EAE6;
+
+  --ink:#262A2E;
+  --ink-soft:#666B62;
+  --line:#C9C2AC;
+  --line-soft:#DDD7C4;
+
+  --brand-yellow:#E2A930;
+  --brand-yellow-deep:#B9821E;
+  --brand-blue:#5D7A8C;
+  --brand-blue-deep:#3E5A6C;
+
+  --science:#3B82F6;
+  --engineering:#F59E0B;
+  --art:#EC4899;
+  --maths:#10B981;
+  --technology:#8B5CF6;
+  --transversal:#8A8D85;
+
+  --accent: var(--brand-yellow);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{
+  font-family:'Inter',sans-serif;
+  background:
+    radial-gradient(ellipse 900px 620px at 8% -6%, rgba(93,122,140,.16), transparent 60%),
+    radial-gradient(ellipse 800px 700px at 100% 100%, rgba(226,169,48,.10), transparent 55%),
+    linear-gradient(155deg, var(--bg-blue) 0%, var(--bg-beige) 62%, var(--bg-beige) 100%);
+  color:var(--ink);
+  overflow:hidden;
+}
+.mono{font-family:'IBM Plex Mono',monospace;}
+h1,h2,h3,h4,.display{font-family:'Fraunces',serif;font-weight:500;letter-spacing:-.01em;}
+
+#deck{position:relative;height:100vh;width:100vw;}
+
+.slide{
+  position:absolute; inset:0;
+  display:flex; flex-direction:column;
+  padding:52px 72px 118px;
+  opacity:0; visibility:hidden;
+  transform:translateY(14px);
+  transition:opacity .5s ease, transform .5s ease, visibility 0s linear .5s;
+}
+.slide.active{
+  opacity:1; visibility:visible; transform:translateY(0);
+  transition:opacity .5s ease, transform .5s ease;
+}
+
+.eyebrow{
+  display:flex; align-items:center; gap:14px;
+  font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--ink-soft); margin-bottom:18px; flex-shrink:0;
+}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--brand-yellow);flex-shrink:0;}
+.eyebrow .rule{flex:1;height:1px;background:var(--line);}
+
+.slide h2.title{font-size:38px; line-height:1.06; max-width:900px; margin-bottom:14px; flex-shrink:0;}
+
+/* framed subtitle: used everywhere as the "textos enquadrats" treatment */
+.slide p, .slide .idesc, .phase-card p, .rank-step p, .eq-ex-card .calc,
+.scope-card p, .future-item p, .map-copy p, .cover-sub, .cover-foot .col{
+  text-align:justify; text-justify:inter-word;
+}
+.frame-box{
+  border:1px solid var(--line); border-radius:10px; background:var(--paper-raised);
+  padding:24px; display:flex; align-items:center;
+}
+.slide .subtitle{
+  color:var(--ink-soft); font-size:14.5px; line-height:1.55; max-width:100%;
+  margin-bottom:22px; flex-shrink:0; border-left:2px solid var(--brand-yellow);
+  padding:2px 0 2px 16px; text-align:justify; text-justify:inter-word;
+}
+
+.slide-body{flex:1; min-height:0; display:flex; flex-direction:column; overflow-y:auto; padding-bottom:4px;}
+
+/* ---------- Footer nav ---------- */
+#nav{
+  position:absolute; left:72px; right:72px; bottom:30px;
+  display:flex; align-items:center; gap:18px;
+  font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft);
+}
+#nav .count{white-space:nowrap;}
+#navline{flex:1; height:1px; background:var(--line-soft); position:relative;}
+#navline .fill{position:absolute; top:0; left:0; height:1px; background:var(--brand-yellow-deep); transition:width .45s ease;}
+.navdots{display:flex; gap:8px;}
+
+/* ---------- Selector d'idioma (persistent, sobre totes les diapositives) ---------- */
+#langSwitch{
+  position:fixed; top:22px; right:28px; z-index:500;
+  display:flex; gap:4px; border:1px solid var(--line); border-radius:999px; padding:3px;
+  background:rgba(247,244,236,.9); backdrop-filter:blur(6px);
+  box-shadow:0 8px 20px -10px rgba(38,42,46,.3);
+}
+.lang-btn{
+  padding:6px 14px; border-radius:999px; border:none; background:transparent; color:var(--ink-soft);
+  font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:600; letter-spacing:.04em;
+  cursor:pointer; transition:all .18s;
+}
+.lang-btn.active{background:var(--ink); color:var(--bg-beige);}
+.lang-btn:not(.active):hover{color:var(--ink);}
+@media (max-width:900px){
+  #langSwitch{top:14px; right:14px;}
+  .lang-btn{padding:5px 10px; font-size:10px;}
+}
+.navdots button{
+  width:8px;height:8px;border-radius:50%;border:1px solid var(--line);background:transparent;cursor:pointer;padding:0;
+  transition:background .2s, border-color .2s, transform .2s;
+}
+.navdots button.on{background:var(--brand-yellow-deep); border-color:var(--brand-yellow-deep); transform:scale(1.25);}
+.arrows{display:flex; gap:6px;}
+.arrows button{
+  width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--paper-raised);
+  cursor:pointer;color:var(--ink); font-size:15px; display:flex;align-items:center;justify-content:center;
+  transition:border-color .2s, background .2s;
+}
+.arrows button:hover{border-color:var(--brand-yellow-deep); color:var(--brand-yellow-deep);}
+.arrows button:focus-visible, .navdots button:focus-visible, .btn:focus-visible{outline:2px solid var(--brand-yellow-deep); outline-offset:3px;}
+
+/* ---------- Buttons ---------- */
+.btn{
+  display:inline-flex; align-items:center; gap:10px;
+  padding:12px 22px; border-radius:999px; border:1.4px solid var(--ink);
+  background:var(--ink); color:var(--bg-beige); text-decoration:none;
+  font-size:13.5px; font-weight:500; cursor:pointer; width:fit-content;
+  transition:background .2s, color .2s, border-color .2s, transform .15s;
+}
+.btn:hover{background:var(--brand-yellow); border-color:var(--brand-yellow-deep); color:var(--ink); transform:translateY(-1px);}
+.btn.ghost{background:transparent; color:var(--ink);}
+.btn.ghost:hover{background:var(--brand-yellow); border-color:var(--brand-yellow-deep); color:var(--ink);}
+.btn svg{width:13px;height:13px;}
+
+/* =====================================================
+   SLIDE 0 — PORTADA
+   ===================================================== */
+.cover-slide{justify-content:space-between; padding:52px 72px 118px;}
+.brandmark{display:flex; align-items:center; gap:14px; flex-shrink:0;}
+.brandmark img{height:60px; width:auto; display:block;}
+
+.cover-main{flex:1; display:flex; flex-direction:column; justify-content:center; gap:22px; max-width:1000px;}
+.cover-main .kicker{font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); display:flex; align-items:center; gap:14px;}
+.cover-main .kicker .dot{width:7px;height:7px;border-radius:50%;background:var(--brand-yellow);}
+.cover-title-frame{position:relative; padding-left:26px;}
+.cover-title-frame::before{
+  content:''; position:absolute; left:0; top:6px; bottom:6px; width:5px; border-radius:3px; background:var(--brand-yellow);
+}
+.cover-main h1{font-size:76px; line-height:1.02; margin-bottom:14px;}
+.cover-main .cover-sub{font-size:21px; color:var(--brand-blue-deep); font-family:'Fraunces',serif; font-style:italic; text-align:left;}
+
+.cover-foot{display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; flex-shrink:0; border-top:1px solid var(--line); padding-top:18px;}
+.cover-foot .col{
+  padding:0 24px; font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--ink-soft); line-height:1.7;
+  border-left:1px solid var(--line);
+}
+.cover-foot .col:first-child{padding-left:0; border-left:none;}
+.cover-foot .col b{color:var(--ink); display:block; font-family:'Inter',sans-serif; font-size:13.5px; font-weight:600; margin-bottom:3px;}
+
+/* =====================================================
+   SLIDE 0.5 — ÍNDEX
+   ===================================================== */
+.index-grid{flex:1; display:grid; grid-template-columns:1fr 1fr; gap:16px; align-content:center;}
+.index-item{
+  display:grid; grid-template-columns:44px 1fr; gap:16px; align-items:start;
+  padding:24px; cursor:pointer; border:1px solid var(--line); border-radius:12px;
+  background:var(--paper-raised); transition:border-color .2s, transform .15s, background .2s;
+}
+.index-item:hover{border-color:var(--brand-yellow-deep); transform:translateY(-2px); background:#FCFAF3;}
+.index-item .inum{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--brand-yellow-deep); font-weight:600;}
+.index-item .ititle{font-size:18px; font-family:'Fraunces',serif; font-weight:500; display:block;}
+.index-item .idesc{display:block; font-family:'Inter',sans-serif; font-size:12.5px; color:var(--ink-soft); font-weight:400; margin-top:4px;}
+
+/* =====================================================
+   SLIDE 1 — ABANS / DESPRÉS
+   ===================================================== */
+.compare-body{flex:1; display:grid; grid-template-columns:1fr 52px 1fr; gap:0; min-height:0; align-items:stretch;}
+.compare-col{
+  border:1px solid var(--line); border-radius:16px; padding:26px 28px; display:flex; flex-direction:column;
+}
+.compare-col.before{background:var(--panel-blue); border-color:#C7CFCB; opacity:.92;}
+.compare-col.after{background:linear-gradient(160deg, #FBF3DD 0%, var(--paper-raised) 55%); border-color:var(--brand-yellow-deep);}
+.compare-head{display:flex; align-items:center; gap:10px; margin-bottom:18px; flex-shrink:0;}
+.compare-head .tag-pill{font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; padding:5px 12px; border-radius:999px;}
+.compare-col.before .tag-pill{background:#fff; color:var(--ink-soft); border:1px solid var(--line);}
+.compare-col.after .tag-pill{background:var(--brand-yellow); color:#5C4110;}
+.compare-head h3{font-size:22px;}
+.compare-list{display:flex; flex-direction:column; gap:14px; flex:1; justify-content:center;}
+.compare-row{display:flex; align-items:flex-start; gap:12px;}
+.compare-row .mark{width:20px; height:20px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; margin-top:1px;}
+.compare-col.before .mark{background:#fff; color:var(--ink-soft); border:1px solid var(--line);}
+.compare-col.after .mark{background:var(--brand-blue-deep); color:#fff;}
+.compare-row p{font-size:13.6px; line-height:1.5; color:var(--ink); text-align:left;}
+.compare-col.before .compare-row p{color:#4B5450;}
+.compare-arrow{display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+.compare-arrow svg{width:26px; height:26px; stroke:var(--brand-yellow-deep);}
+
+/* =====================================================
+   SLIDE 2 — MAPA DINÀMIC
+   ===================================================== */
+.map-slide-body{flex:1; display:grid; grid-template-columns:1fr 1.7fr; gap:32px; min-height:0;}
+.map-copy{display:flex; flex-direction:column; gap:16px; min-height:0;}
+.map-copy .frame-box p{color:var(--ink-soft); font-size:14px; line-height:1.65;}
+.map-legend{
+  display:flex; flex-direction:column; gap:11px; border:1px solid var(--line); border-radius:10px;
+  background:var(--paper-raised); padding:24px;
+}
+.map-legend .row{display:flex; align-items:center; gap:10px; font-size:12.8px; color:var(--ink-soft);}
+.map-legend .line-swatch{width:22px; height:0; border-top:3px solid; flex-shrink:0;}
+.map-legend .line-swatch.dashed{border-top-style:dashed;}
+.map-copy .btn{margin-top:auto;}
+
+.map-frame-wrap{
+  position:relative; border:1px solid var(--line); border-radius:12px; overflow:hidden;
+  background:var(--paper-raised); box-shadow:0 10px 30px -18px rgba(38,42,46,.35);
+  display:flex; flex-direction:column; min-height:0;
+}
+.map-frame-wrap.expanded{
+  position:fixed; inset:28px; z-index:999; box-shadow:0 30px 70px -20px rgba(20,24,28,.45);
+}
+.mm-topbar{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:12px 16px; border-bottom:1px solid var(--line); flex-shrink:0; background:var(--paper-raised);
+}
+.map-tag{background:transparent; font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft);}
+.mm-controls{display:flex; align-items:center; gap:6px;}
+.mm-controls button{
+  border:1px solid var(--line); background:#fff; color:var(--ink); border-radius:8px; cursor:pointer;
+  font-family:'IBM Plex Mono',monospace; font-size:12px; padding:6px 10px; display:flex; align-items:center; gap:5px;
+  transition:border-color .2s, background .2s;
+}
+.mm-controls button:hover{border-color:var(--brand-yellow-deep); background:#FBF1DC;}
+.mm-controls button.expand-btn{font-family:'Inter',sans-serif; font-weight:500;}
+
+.mm-body{flex:1; display:flex; min-height:0;}
+.mm-canvas-area{
+  flex:1; position:relative; overflow:hidden; cursor:grab; min-width:0;
+  background:
+    radial-gradient(ellipse 500px 400px at 15% 10%, rgba(93,122,140,.10), transparent 60%),
+    radial-gradient(ellipse 500px 400px at 90% 90%, rgba(226,169,48,.08), transparent 60%),
+    var(--bg-beige);
+}
+.mm-canvas-area.dragging{cursor:grabbing;}
+.mm-canvas-area svg{position:absolute; top:0; left:0;}
+
+.mm-detail{
+  width:340px; flex-shrink:0; border-left:1px solid var(--line); background:var(--paper-raised);
+  padding:22px; overflow-y:auto; display:flex; flex-direction:column;
+}
+.mm-detail-empty{color:var(--ink-soft); font-size:13px; line-height:1.6; margin:auto 0;}
+.mm-detail .d-title{font-family:'Fraunces',serif; font-size:19px; font-weight:500; margin-bottom:10px;}
+.mm-detail .d-badges{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;}
+.mm-detail .d-badge{font-size:10.5px; padding:4px 9px; border-radius:999px; background:var(--panel-blue); color:var(--brand-blue-deep); font-weight:600; font-family:'IBM Plex Mono',monospace;}
+.mm-detail .d-badge.entry{background:var(--brand-yellow); color:#5C4110;}
+.mm-detail .d-badge.fest{background:#FCE4F1; color:#B23D77;}
+.mm-detail .d-desc{font-size:12.8px; line-height:1.62; color:var(--ink-soft); text-align:justify; margin-bottom:16px;}
+.mm-detail .d-sub{display:flex; align-items:baseline; justify-content:space-between; font-family:'IBM Plex Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:.07em; color:var(--ink-soft); margin-bottom:8px;}
+.mm-detail .d-sub .d-sub-count{font-weight:400; text-transform:none; letter-spacing:0; color:var(--ink-soft);}
+.mm-detail .d-skills{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px;}
+.mm-detail .d-skill{
+  display:flex; align-items:center; gap:6px; font-size:11px; padding:4px 6px 4px 10px;
+  border-radius:999px; border:1px solid var(--line-soft); color:var(--ink); background:#fff;
+}
+.mm-detail .d-skill .xp{font-family:'IBM Plex Mono',monospace; font-size:9.5px; font-weight:700; color:#fff; background:var(--brand-blue-deep); padding:2px 7px; border-radius:999px;}
+.mm-detail .d-edges .d-edge-row{display:flex; justify-content:space-between; align-items:baseline; gap:8px; padding:8px 0; border-bottom:1px dashed var(--line-soft); font-size:12.3px;}
+.mm-detail .d-edges .d-edge-row:last-child{border-bottom:none;}
+.mm-detail .d-edges .d-edge-name{display:flex; flex-direction:column;}
+.mm-detail .d-edges .d-edge-lvl{font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ink-soft); margin-top:2px;}
+.mm-detail .d-edges .d-edge-pct{font-family:'IBM Plex Mono',monospace; font-weight:700; color:var(--brand-blue-deep); flex-shrink:0;}
+
+
+/* =====================================================
+   SLIDE 3 — HABILITATS (branques desplegables)
+   ===================================================== */
+.habits-body{flex:1; min-height:0; display:grid; grid-template-columns:1fr 190px; gap:24px; align-items:stretch;}
+.branch-grid{min-width:0; min-height:0; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(2, min-content); column-gap:14px; row-gap:22px; align-items:start; align-content:start;}
+.branch-acc{
+  border:1px solid var(--line); border-radius:14px; background:var(--paper-raised);
+  display:flex; flex-direction:column; overflow:hidden; align-self:start;
+}
+.branch-acc::before{content:''; display:block; height:4px; flex-shrink:0; background:var(--b-color, var(--brand-blue-deep));}
+.branch-head{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:20px 22px; cursor:pointer; background:none; border:none; width:100%; text-align:left; font-family:'Inter',sans-serif;
+}
+.branch-head .left{display:flex; align-items:center; gap:11px; min-width:0;}
+.branch-head .swatch{width:12px; height:12px; border-radius:50%; background:var(--b-color, var(--brand-blue-deep)); flex-shrink:0;}
+.branch-head h4{font-size:16.5px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.branch-head .right{display:flex; align-items:center; gap:9px; flex-shrink:0;}
+.branch-head .count{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-soft);}
+.branch-head .chev{color:var(--ink-soft); font-size:13px; transition:transform .25s ease;}
+.branch-acc.open .branch-head .chev{transform:rotate(180deg);}
+.branch-body{max-height:0; overflow:hidden; transition:max-height .3s ease; border-top:1px solid transparent;}
+.branch-acc.open .branch-body{max-height:600px; border-top-color:var(--line);}
+.branch-scroll{max-height:190px; overflow-y:auto; padding:16px 22px;}
+.branch-scroll::-webkit-scrollbar{width:6px;}
+.branch-scroll::-webkit-scrollbar-track{background:transparent;}
+.branch-scroll::-webkit-scrollbar-thumb{background:var(--b-color, var(--brand-yellow-deep)); border-radius:6px;}
+.branch-scroll{scrollbar-width:thin; scrollbar-color:var(--b-color, var(--brand-yellow-deep)) transparent;}
+.branch-skill-list{display:flex; flex-direction:column; gap:9px;}
+.branch-skill-row{display:flex; align-items:baseline; gap:8px; font-size:12.5px; color:var(--ink); line-height:1.42;}
+.branch-skill-row .b-dot{width:5px; height:5px; border-radius:50%; background:var(--b-color, var(--brand-blue-deep)); flex-shrink:0; margin-top:5px;}
+
+/* =====================================================
+   SLIDE 4 — RANKS (metodologia dels rangs 1-50)
+   ===================================================== */
+.rank-slide-body{flex:1; display:grid; grid-template-columns:0.85fr 1.4fr; gap:28px; min-height:0;}
+.rank-steps{display:flex; flex-direction:column; gap:16px; min-height:0;}
+.rank-step{
+  border:1px solid var(--line); border-radius:14px; background:var(--paper-raised);
+  padding:24px; flex:1; display:flex; flex-direction:column; justify-content:center; position:relative; overflow:hidden;
+}
+.rank-step::before{content:''; position:absolute; left:0; top:0; bottom:0; width:4px;}
+.rank-step.s1::before{background:var(--brand-blue-deep);}
+.rank-step.s2::before{background:var(--brand-yellow);}
+.rank-step .stag{font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft); margin-bottom:6px;}
+.rank-step h4{font-size:16.5px; margin-bottom:7px;}
+.rank-step p{font-size:13px; color:var(--ink-soft); line-height:1.55;}
+.rank-scale-bar{height:10px; border-radius:7px; background:linear-gradient(90deg,#DCD6C4, var(--brand-yellow-deep)); position:relative; margin-top:4px;}
+.rank-scale-labels{display:flex; justify-content:space-between; margin-top:8px; font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink-soft);}
+
+.rank-table-frame{
+  border:1px solid var(--line); border-radius:14px; padding:24px; background:var(--paper-raised);
+  display:flex; flex-direction:column; min-height:0;
+}
+.rank-table-frame .rt-head{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:16px; flex-shrink:0;}
+.rank-table-frame .rt-head h4{font-size:16px; font-family:'Fraunces',serif; font-weight:500;}
+.rank-table-frame .rt-head span{font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink-soft);}
+.rank-scroll{flex:1; min-height:0; overflow-y:auto; padding-right:14px;}
+.rank-scroll::-webkit-scrollbar{width:9px;}
+.rank-scroll::-webkit-scrollbar-track{background:var(--line-soft); border-radius:6px;}
+.rank-scroll::-webkit-scrollbar-thumb{background:var(--brand-yellow-deep); border-radius:6px;}
+.rank-scroll{scrollbar-width:thin; scrollbar-color:var(--brand-yellow-deep) var(--line-soft);}
+table.rank-table{width:100%; height:100%; border-collapse:collapse; table-layout:fixed;}
+table.rank-table col.c-label{width:19%;}
+table.rank-table th{
+  font-family:'IBM Plex Mono',monospace; font-weight:500; font-size:10px; text-transform:uppercase;
+  letter-spacing:.03em; color:var(--ink-soft); text-align:center; padding:0 3px 12px; border-bottom:1.4px solid var(--ink);
+  position:sticky; top:0; background:var(--paper-raised); z-index:2; white-space:nowrap;
+}
+table.rank-table th:first-child{text-align:left;}
+table.rank-table td{
+  text-align:center; padding:16px 3px; border-bottom:1px solid var(--line-soft);
+  font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--ink); white-space:nowrap;
+}
+table.rank-table td.bloclabel{text-align:left; font-weight:600; white-space:nowrap;}
+table.rank-table td.bloclabel .rng{display:block; color:var(--ink-soft); font-weight:400; font-size:10.5px; margin-top:2px;}
+
+/* =====================================================
+   SLIDE 5 — XP FORMULA
+   ===================================================== */
+.xp-slide-body{flex:1; display:grid; grid-template-rows:1fr auto; gap:28px; min-height:0;}
+.equation{
+  display:flex; align-items:center; justify-content:center; gap:30px; flex-wrap:wrap;
+  border:1px solid var(--line); border-radius:16px; background:var(--paper-raised);
+  padding:44px;
+}
+.eq-part{font-family:'Fraunces',serif; font-size:64px; font-weight:500;}
+.eq-op{font-family:'Fraunces',serif; font-size:64px; color:var(--ink-soft); font-weight:400;}
+.eq-tag{display:flex; flex-direction:column; align-items:center; gap:6px;}
+.eq-tag .lbl{font-family:'IBM Plex Mono',monospace; font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);}
+.eq-examples{display:grid; grid-template-columns:repeat(3,1fr); gap:18px;}
+.eq-ex-card{border:1px solid var(--line); border-radius:12px; padding:24px; background:var(--paper-raised); display:flex; flex-direction:column; justify-content:center;}
+.eq-ex-card .r{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-soft); margin-bottom:8px;}
+.eq-ex-card .calc{font-size:14.5px; color:var(--ink-soft); margin-bottom:6px;}
+.eq-ex-card .xp{font-family:'Fraunces',serif; font-size:30px;}
+.eq-ex-card .xp span{font-size:14px; color:var(--ink-soft); font-family:'Inter',sans-serif; font-weight:500;}
+
+/* =====================================================
+   SLIDE 6 — THRESHOLDS (nivells habilitat/branca/global)
+   ===================================================== */
+.th-slide-body{flex:1; display:grid; grid-template-columns:1.1fr 1fr; grid-template-rows:1fr; align-items:stretch; gap:32px; min-height:0;}
+.th-table-frame{
+  border:1px solid var(--line); border-radius:14px; background:var(--paper-raised);
+  padding:24px 8px 24px 28px; display:flex; flex-direction:column; min-height:0; height:100%; overflow:hidden;
+}
+.th-scroll{
+  flex:1; min-height:0; overflow-y:auto; padding-right:18px;
+}
+.th-scroll::-webkit-scrollbar{width:9px;}
+.th-scroll::-webkit-scrollbar-track{background:var(--line-soft); border-radius:6px;}
+.th-scroll::-webkit-scrollbar-thumb{background:var(--brand-yellow-deep); border-radius:6px;}
+.th-scroll{scrollbar-width:thin; scrollbar-color:var(--brand-yellow-deep) var(--line-soft);}
+table.th-table{width:100%; border-collapse:collapse; font-size:13.5px; table-layout:fixed;}
+table.th-table col.c-lvl{width:26%;}
+table.th-table col.c-num{width:24.66%;}
+table.th-table th{
+  text-align:right; font-family:'IBM Plex Mono',monospace; font-weight:500; font-size:10.5px;
+  text-transform:uppercase; letter-spacing:.07em; color:var(--ink-soft); padding:0 0 11px;
+  border-bottom:1.4px solid var(--ink); position:sticky; top:0; background:var(--paper-raised); z-index:2;
+}
+table.th-table th:first-child{text-align:left;}
+table.th-table td{padding:12px 0; border-bottom:1px solid var(--line-soft); text-align:right;}
+table.th-table td.lvl{font-family:'IBM Plex Mono',monospace; color:var(--ink-soft); text-align:left;}
+table.th-table td.num{font-family:'IBM Plex Mono',monospace; text-align:right; padding-right:4px;}
+.scope-cards{display:flex; flex-direction:column; gap:14px; min-height:0; flex:1; height:100%;}
+.scope-card{
+  border:1px solid var(--line); border-radius:12px; padding:22px; background:var(--paper-raised);
+  position:relative; overflow:hidden; flex:1; display:flex; flex-direction:column; justify-content:center; min-height:0;
+}
+.scope-card::before{content:''; position:absolute; left:0; top:0; bottom:0; width:4px;}
+.scope-card.skill::before{background:var(--brand-blue);}
+.scope-card.branch::before{background:var(--brand-blue-deep);}
+.scope-card.global::before{background:var(--brand-yellow);}
+.scope-card .tag{font-family:'IBM Plex Mono',monospace; font-size:9.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft); margin-bottom:5px;}
+.scope-card h4{font-size:14.5px; margin-bottom:6px;}
+.scope-card p{font-size:11.8px; color:var(--ink-soft); line-height:1.5;}
+.scope-cards .btn{flex:0 0 auto;}
+
+/* =====================================================
+   SLIDE 7 — TRAÇAR UN CAMÍ DINS D'UN MAPA
+   ===================================================== */
+.path-body{flex:1; display:grid; grid-template-columns:1.25fr 1fr; gap:32px; min-height:0;}
+.path-steps{display:flex; flex-direction:column; gap:14px; justify-content:center;}
+.path-step{
+  display:grid; grid-template-columns:38px 1fr; gap:16px; align-items:start;
+  border:1px solid var(--line); border-radius:14px; padding:20px 22px; background:var(--paper-raised);
+}
+.path-step .pnum{
+  width:30px; height:30px; border-radius:50%; background:var(--brand-blue-deep); color:#fff;
+  display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:700;
+}
+.path-step:last-child .pnum{background:var(--brand-yellow-deep);}
+.path-step h4{font-size:15.5px; margin-bottom:5px;}
+.path-step p{font-size:12.8px; color:var(--ink-soft); line-height:1.5;}
+
+.qr-card{
+  border:1px solid var(--brand-yellow-deep); border-radius:16px; padding:26px;
+  background:linear-gradient(160deg, #FBF3DD, var(--paper-raised));
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; text-align:center;
+}
+.qr-card .qr-frame{background:#fff; border-radius:12px; padding:14px; border:1px solid var(--line);}
+.qr-card .qr-frame svg{width:150px; height:150px; display:block;}
+.qr-card .qr-label{font-family:'Fraunces',serif; font-size:16px;}
+.qr-card .qr-note{font-size:12px; color:var(--ink-soft); line-height:1.5; max-width:220px;}
+.qr-card .qr-url{font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--brand-blue-deep); word-break:break-all;}
+.qr-card .qr-pending{font-family:'IBM Plex Mono',monospace; font-size:9.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); border:1px dashed var(--line); border-radius:999px; padding:4px 10px;}
+
+/* =====================================================
+   SLIDE 8 — GENERAR CONTINGUT AMB HTML
+   ===================================================== */
+.content-body{flex:1; display:flex; flex-direction:column; gap:20px; min-height:0;}
+.content-features{flex:1; display:grid; grid-template-columns:repeat(2,1fr); grid-auto-rows:1fr; gap:16px; min-height:0;}
+.content-feature{
+  border:1px solid var(--line); border-radius:14px; padding:22px; background:var(--paper-raised);
+  display:flex; flex-direction:column; justify-content:center; overflow:hidden; min-height:96px;
+}
+.content-feature .icon{width:30px; height:30px; margin-bottom:12px; flex-shrink:0;}
+.content-feature .icon svg{width:100%; height:100%; stroke:var(--brand-blue-deep);}
+.content-feature h4{font-size:15.5px; margin-bottom:7px;}
+.content-feature p{font-size:12.6px; color:var(--ink-soft); line-height:1.52;}
+.content-callout{
+  flex-shrink:0; border:1px solid var(--brand-yellow-deep); border-radius:14px; padding:18px 22px;
+  background:linear-gradient(120deg, #FBF3DD, var(--paper-raised)); display:flex; align-items:center; gap:14px;
+  position:relative; z-index:2;
+}
+.content-callout .icon{width:26px; height:26px; flex-shrink:0;}
+.content-callout .icon svg{width:100%; height:100%; stroke:var(--brand-yellow-deep);}
+.content-callout p{font-size:13px; color:#5C4110; line-height:1.5;}
+.content-callout p b{font-weight:600;}
+
+
+
+@media (max-width:900px){
+  .slide{padding:32px 20px 86px;}
+  .slide h2.title{font-size:28px;}
+  .map-slide-body, .index-grid{grid-template-columns:1fr; overflow:auto;}
+  .branch-grid{grid-template-columns:1fr; grid-template-rows:none; overflow:auto;}
+  .habits-body{grid-template-columns:1fr; overflow:auto;}
+  .compare-body{grid-template-columns:1fr; overflow:auto; gap:16px;}
+  .compare-arrow{transform:rotate(90deg); padding:4px 0;}
+  .rank-slide-body{grid-template-columns:1fr; overflow:auto;}
+  .th-slide-body{grid-template-columns:1fr; overflow:auto;}
+  .content-features{grid-template-columns:1fr; overflow:auto;}
+  .path-body{grid-template-columns:1fr; overflow:auto;}
+  .eq-part, .eq-op{font-size:38px;}
+  .cover-main h1{font-size:44px;}
+  .cover-foot{grid-template-columns:1fr;}
+  #nav{left:20px; right:20px;}
+}
+</style>
+</head>
+<body>
+
+<div id="langSwitch">
+  <button class="lang-btn active" data-lang="ca">CAT</button>
+  <button class="lang-btn" data-lang="es">CAST</button>
+</div>
+
+<div id="deck">
+
+  <!-- ============ SLIDE 0 — PORTADA ============ -->
+  <section class="slide active cover-slide" data-accent="engineering">
+    <div class="brandmark">
+      <img src="data:image/png;base64,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" alt="Ignite Nexus">
+    </div>
+
+    <div class="cover-main">
+      <div class="kicker"><span class="dot"></span><span id="txtKicker">Presentació interna</span></div>
+      <div class="cover-title-frame">
+        <h1 class="display" id="txtCoverTitle">Projecte<br>Pedagògic IGNITE</h1>
+        <div class="cover-sub" id="txtCoverSub">Mapes de projectes</div>
+      </div>
+    </div>
+
+    <div class="cover-foot">
+      <div class="col"><b>Ignite Nexus</b><span id="txtCoverCol1">Robòtica &amp; Coding</span></div>
+      <div class="col"><b id="txtAmbitLabel">Àmbit</b><span id="txtAmbit">Formació pedagògica</span></div>
+      <div class="col"><b id="txtDataLabel">Data</b><span id="txtData">Dimarts 1 de setembre de 2026</span></div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 0.5 — ÍNDEX ============ -->
+  <section class="slide" data-accent="transversal">
+    <div class="eyebrow"><span class="dot"></span><span id="txtIndexEyebrow">Índex</span><span class="rule"></span></div>
+    <h2 class="title" id="txtIndexTitle">Què veurem</h2>
+    <p class="subtitle" id="txtIndexSub">Set blocs: del procés de treball fins a la proposta de futur.</p>
+
+    <div class="slide-body">
+      <div class="index-grid" id="indexList"></div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 1 — ABANS / DESPRÉS ============ -->
+  <section class="slide" data-accent="engineering">
+    <div class="eyebrow"><span class="dot"></span><span id="txtS1Eyebrow">01 — Reestructuració</span><span class="rule"></span></div>
+    <h2 class="title" id="txtS1Title">Abans i després</h2>
+    <p class="subtitle" id="txtS1Sub">Com ha canviat la manera d'organitzar i seguir els projectes STEAM.</p>
+
+    <div class="slide-body compare-body">
+      <div class="compare-col before">
+        <div class="compare-head"><span class="tag-pill" id="txtAbansPill">Abans</span><h3 id="txtAbansH3">Estructura antiga</h3></div>
+        <div class="compare-list">
+          <div class="compare-row"><span class="mark">–</span><p id="txtBefore0">Projectes solts, sense cap ordre ni connexió entre ells.</p></div>
+          <div class="compare-row"><span class="mark">–</span><p id="txtBefore1">Les habilitats treballades no estaven definides ni mesurades.</p></div>
+          <div class="compare-row"><span class="mark">–</span><p id="txtBefore2">Cap sistema de punts ni de progressió per a l'alumnat.</p></div>
+          <div class="compare-row"><span class="mark">–</span><p id="txtBefore3">Validació informal, sense criteri escrit ni seguiment.</p></div>
+          <div class="compare-row"><span class="mark">–</span><p id="txtBefore4">Material de presentació estàtic, fet a mà cada vegada.</p></div>
+        </div>
+      </div>
+
+      <div class="compare-arrow">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </div>
+
+      <div class="compare-col after">
+        <div class="compare-head"><span class="tag-pill" id="txtDespresPill">Després</span><h3 id="txtDespresH3">Nova estructura</h3></div>
+        <div class="compare-list">
+          <div class="compare-row"><span class="mark">✓</span><p id="txtAfter0"><b>Mapes de projectes</b> dinàmics, amb rutes de progressió i % de recomanació.</p></div>
+          <div class="compare-row"><span class="mark">✓</span><p id="txtAfter1"><b>73 habilitats STEAM</b> catalogades, amb un rang de l'1 al 50 per projecte.</p></div>
+          <div class="compare-row"><span class="mark">✓</span><p id="txtAfter2"><b>Sistema de punts (XP)</b> i nivells per habilitat, branca i global.</p></div>
+          <div class="compare-row"><span class="mark">✓</span><p id="txtAfter3"><b>Criteri d'avaluació</b> clar: validat, en revisió o rebutjat.</p></div>
+          <div class="compare-row"><span class="mark">✓</span><p id="txtAfter4"><b>Contingut generat amb HTML</b>: interactiu, dinàmic i sempre actualitzat.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 2 — MAPA DINÀMIC ============ -->
+  <section class="slide" data-accent="science">
+    <div class="eyebrow"><span class="dot"></span><span id="txtS2Eyebrow">02 — Mapes de projectes</span><span class="rule"></span></div>
+    <h2 class="title" id="txtS2Title">Mapa de projectes</h2>
+    <p class="subtitle" id="txtS2Sub">Màquines motoritzades. Cada projecte connecta amb els següents mitjançant un percentatge de recomanació, segons si l'alumne l'ha superat o necessita reforç.</p>
+
+    <div class="slide-body map-slide-body">
+      <div class="map-copy">
+        <div class="frame-box">
+          <p id="txtMapFrame">El mapa és dinàmic: clica un projecte per veure'n el detall i les seves connexions de sortida amb el <b>% de recomanació</b> cap al projecte següent.</p>
+        </div>
+        <div class="map-legend">
+          <div class="row"><span class="line-swatch" style="border-color:var(--brand-blue-deep);"></span> <span id="txtLegendOut">Connexions de sortida</span></div>
+          <div class="row"><span class="line-swatch" style="border-color:var(--brand-yellow-deep);"></span> <span id="txtLegendIn">Connexions d'entrada</span></div>
+        </div>
+        <a class="btn" href="https://mapesdeprojectes.vercel.app/" target="_blank" rel="noopener">
+          <span id="txtOpenDemo">Obrir la demo completa</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H8M17 7V16"/></svg>
+        </a>
+      </div>
+
+      <div class="map-frame-wrap" id="mmMapWrap">
+        <div class="mm-topbar">
+          <span class="map-tag" id="txtLiveDemo">Demo en directe — Màquines Motoritzades</span>
+          <div class="mm-controls">
+            <button id="mmZoomOut" aria-label="Redueix">–</button>
+            <button id="mmZoomReset" aria-label="Ajusta a la vista">⤢</button>
+            <button id="mmZoomIn" aria-label="Amplia">+</button>
+            <button id="mmExpandBtn" class="expand-btn">Ampliar</button>
+          </div>
+        </div>
+        <div class="mm-body">
+          <div class="mm-canvas-area" id="mmCanvasArea">
+            <svg id="mmSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+          </div>
+          <div class="mm-detail" id="mmDetail">
+            <div class="mm-detail-empty" id="txtDetailEmpty">Selecciona un projecte del mapa per veure el detall, les hores i les connexions de sortida.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 3 — HABILITATS ============ -->
+  <section class="slide" data-accent="maths">
+    <div class="eyebrow"><span class="dot"></span><span id="txtS3Eyebrow">03 — Habilitats</span><span class="rule"></span></div>
+    <h2 class="title" id="txtS3Title">Habilitats</h2>
+    <p class="subtitle" id="txtS3Sub">Sis branques STEAM i transversals. Cada projecte treballa un conjunt d'aquestes habilitats.</p>
+
+    <div class="slide-body habits-body">
+      <div class="branch-grid" id="branchGrid"></div>
+      <div class="qr-card">
+        <div class="qr-frame">
+          <svg viewBox="0 0 41 41" xmlns="http://www.w3.org/2000/svg" style="width:110px;height:110px;"><path d="M2,2H3V3H2zM3,2H4V3H3zM4,2H5V3H4zM5,2H6V3H5zM6,2H7V3H6zM7,2H8V3H7zM8,2H9V3H8zM10,2H11V3H10zM11,2H12V3H11zM14,2H15V3H14zM16,2H17V3H16zM19,2H20V3H19zM20,2H21V3H20zM24,2H25V3H24zM29,2H30V3H29zM32,2H33V3H32zM33,2H34V3H33zM34,2H35V3H34zM35,2H36V3H35zM36,2H37V3H36zM37,2H38V3H37zM38,2H39V3H38zM2,3H3V4H2zM8,3H9V4H8zM12,3H13V4H12zM13,3H14V4H13zM15,3H16V4H15zM17,3H18V4H17zM18,3H19V4H18zM19,3H20V4H19zM20,3H21V4H20zM22,3H23V4H22zM23,3H24V4H23zM24,3H25V4H24zM27,3H28V4H27zM28,3H29V4H28zM30,3H31V4H30zM32,3H33V4H32zM38,3H39V4H38zM2,4H3V5H2zM4,4H5V5H4zM5,4H6V5H5zM6,4H7V5H6zM8,4H9V5H8zM10,4H11V5H10zM11,4H12V5H11zM12,4H13V5H12zM14,4H15V5H14zM17,4H18V5H17zM19,4H20V5H19zM20,4H21V5H20zM22,4H23V5H22zM23,4H24V5H23zM27,4H28V5H27zM29,4H30V5H29zM30,4H31V5H30zM32,4H33V5H32zM34,4H35V5H34zM35,4H36V5H35zM36,4H37V5H36zM38,4H39V5H38zM2,5H3V6H2zM4,5H5V6H4zM5,5H6V6H5zM6,5H7V6H6zM8,5H9V6H8zM20,5H21V6H20zM22,5H23V6H22zM23,5H24V6H23zM24,5H25V6H24zM27,5H28V6H27zM28,5H29V6H28zM29,5H30V6H29zM32,5H33V6H32zM34,5H35V6H34zM35,5H36V6H35zM36,5H37V6H36zM38,5H39V6H38zM2,6H3V7H2zM4,6H5V7H4zM5,6H6V7H5zM6,6H7V7H6zM8,6H9V7H8zM11,6H12V7H11zM12,6H13V7H12zM13,6H14V7H13zM14,6H15V7H14zM17,6H18V7H17zM21,6H22V7H21zM24,6H25V7H24zM26,6H27V7H26zM27,6H28V7H27zM28,6H29V7H28zM32,6H33V7H32zM34,6H35V7H34zM35,6H36V7H35zM36,6H37V7H36zM38,6H39V7H38zM2,7H3V8H2zM8,7H9V8H8zM10,7H11V8H10zM12,7H13V8H12zM13,7H14V8H13zM15,7H16V8H15zM16,7H17V8H16zM17,7H18V8H17zM22,7H23V8H22zM26,7H27V8H26zM27,7H28V8H27zM28,7H29V8H28zM30,7H31V8H30zM32,7H33V8H32zM38,7H39V8H38zM2,8H3V9H2zM3,8H4V9H3zM4,8H5V9H4zM5,8H6V9H5zM6,8H7V9H6zM7,8H8V9H7zM8,8H9V9H8zM10,8H11V9H10zM12,8H13V9H12zM14,8H15V9H14zM16,8H17V9H16zM18,8H19V9H18zM20,8H21V9H20zM22,8H23V9H22zM24,8H25V9H24zM26,8H27V9H26zM28,8H29V9H28zM30,8H31V9H30zM32,8H33V9H32zM33,8H34V9H33zM34,8H35V9H34zM35,8H36V9H35zM36,8H37V9H36zM37,8H38V9H37zM38,8H39V9H38zM12,9H13V10H12zM13,9H14V10H13zM16,9H17V10H16zM17,9H18V10H17zM18,9H19V10H18zM24,9H25V10H24zM26,9H27V10H26zM28,9H29V10H28zM29,9H30V10H29zM30,9H31V10H30zM2,10H3V11H2zM4,10H5V11H4zM8,10H9V11H8zM9,10H10V11H9zM12,10H13V11H12zM14,10H15V11H14zM15,10H16V11H15zM21,10H22V11H21zM29,10H30V11H29zM30,10H31V11H30zM33,10H34V11H33zM36,10H37V11H36zM38,10H39V11H38zM4,11H5V12H4zM5,11H6V12H5zM7,11H8V12H7zM10,11H11V12H10zM11,11H12V12H11zM13,11H14V12H13zM15,11H16V12H15zM16,11H17V12H16zM19,11H20V12H19zM21,11H22V12H21zM22,11H23V12H22zM25,11H26V12H25zM26,11H27V12H26zM27,11H28V12H27zM28,11H29V12H28zM30,11H31V12H30zM32,11H33V12H32zM33,11H34V12H33zM35,11H36V12H35zM36,11H37V12H36zM37,11H38V12H37zM38,11H39V12H38zM3,12H4V13H3zM4,12H5V13H4zM6,12H7V13H6zM8,12H9V13H8zM9,12H10V13H9zM11,12H12V13H11zM12,12H13V13H12zM14,12H15V13H14zM15,12H16V13H15zM16,12H17V13H16zM17,12H18V13H17zM19,12H20V13H19zM20,12H21V13H20zM21,12H22V13H21zM25,12H26V13H25zM29,12H30V13H29zM32,12H33V13H32zM33,12H34V13H33zM34,12H35V13H34zM36,12H37V13H36zM38,12H39V13H38zM2,13H3V14H2zM6,13H7V14H6zM7,13H8V14H7zM10,13H11V14H10zM13,13H14V14H13zM16,13H17V14H16zM20,13H21V14H20zM22,13H23V14H22zM25,13H26V14H25zM26,13H27V14H26zM28,13H29V14H28zM30,13H31V14H30zM35,13H36V14H35zM2,14H3V15H2zM3,14H4V15H3zM5,14H6V15H5zM7,14H8V15H7zM8,14H9V15H8zM13,14H14V15H13zM16,14H17V15H16zM17,14H18V15H17zM18,14H19V15H18zM19,14H20V15H19zM26,14H27V15H26zM30,14H31V15H30zM32,14H33V15H32zM33,14H34V15H33zM35,14H36V15H35zM38,14H39V15H38zM3,15H4V16H3zM5,15H6V16H5zM10,15H11V16H10zM11,15H12V16H11zM13,15H14V16H13zM14,15H15V16H14zM16,15H17V16H16zM18,15H19V16H18zM21,15H22V16H21zM25,15H26V16H25zM26,15H27V16H26zM29,15H30V16H29zM30,15H31V16H30zM31,15H32V16H31zM32,15H33V16H32zM33,15H34V16H33zM35,15H36V16H35zM2,16H3V17H2zM3,16H4V17H3zM4,16H5V17H4zM5,16H6V17H5zM6,16H7V17H6zM8,16H9V17H8zM9,16H10V17H9zM10,16H11V17H10zM11,16H12V17H11zM13,16H14V17H13zM15,16H16V17H15zM16,16H17V17H16zM17,16H18V17H17zM19,16H20V17H19zM20,16H21V17H20zM21,16H22V17H21zM23,16H24V17H23zM25,16H26V17H25zM27,16H28V17H27zM29,16H30V17H29zM30,16H31V17H30zM31,16H32V17H31zM35,16H36V17H35zM36,16H37V17H36zM38,16H39V17H38zM4,17H5V18H4zM5,17H6V18H5zM6,17H7V18H6zM7,17H8V18H7zM9,17H10V18H9zM10,17H11V18H10zM11,17H12V18H11zM12,17H13V18H12zM15,17H16V18H15zM16,17H17V18H16zM18,17H19V18H18zM20,17H21V18H20zM21,17H22V18H21zM22,17H23V18H22zM24,17H25V18H24zM25,17H26V18H25zM26,17H27V18H26zM29,17H30V18H29zM30,17H31V18H30zM31,17H32V18H31zM33,17H34V18H33zM34,17H35V18H34zM35,17H36V18H35zM37,17H38V18H37zM2,18H3V19H2zM3,18H4V19H3zM4,18H5V19H4zM7,18H8V19H7zM8,18H9V19H8zM9,18H10V19H9zM13,18H14V19H13zM15,18H16V19H15zM16,18H17V19H16zM18,18H19V19H18zM26,18H27V19H26zM27,18H28V19H27zM30,18H31V19H30zM32,18H33V19H32zM38,18H39V19H38zM2,19H3V20H2zM3,19H4V20H3zM4,19H5V20H4zM6,19H7V20H6zM7,19H8V20H7zM10,19H11V20H10zM11,19H12V20H11zM18,19H19V20H18zM19,19H20V20H19zM20,19H21V20H20zM21,19H22V20H21zM23,19H24V20H23zM24,19H25V20H24zM25,19H26V20H25zM28,19H29V20H28zM29,19H30V20H29zM32,19H33V20H32zM33,19H34V20H33zM36,19H37V20H36zM37,19H38V20H37zM38,19H39V20H38zM4,20H5V21H4zM8,20H9V21H8zM9,20H10V21H9zM11,20H12V21H11zM13,20H14V21H13zM14,20H15V21H14zM15,20H16V21H15zM16,20H17V21H16zM18,20H19V21H18zM19,20H20V21H19zM20,20H21V21H20zM21,20H22V21H21zM22,20H23V21H22zM23,20H24V21H23zM24,20H25V21H24zM25,20H26V21H25zM29,20H30V21H29zM30,20H31V21H30zM31,20H32V21H31zM32,20H33V21H32zM33,20H34V21H33zM34,20H35V21H34zM38,20H39V21H38zM2,21H3V22H2zM6,21H7V22H6zM9,21H10V22H9zM11,21H12V22H11zM14,21H15V22H14zM15,21H16V22H15zM17,21H18V22H17zM18,21H19V22H18zM24,21H25V22H24zM26,21H27V22H26zM28,21H29V22H28zM29,21H30V22H29zM32,21H33V22H32zM33,21H34V22H33zM35,21H36V22H35zM2,22H3V23H2zM3,22H4V23H3zM8,22H9V23H8zM9,22H10V23H9zM11,22H12V23H11zM16,22H17V23H16zM18,22H19V23H18zM21,22H22V23H21zM22,22H23V23H22zM25,22H26V23H25zM26,22H27V23H26zM29,22H30V23H29zM30,22H31V23H30zM32,22H33V23H32zM33,22H34V23H33zM36,22H37V23H36zM37,22H38V23H37zM4,23H5V24H4zM7,23H8V24H7zM9,23H10V24H9zM10,23H11V24H10zM11,23H12V24H11zM12,23H13V24H12zM13,23H14V24H13zM14,23H15V24H14zM16,23H17V24H16zM17,23H18V24H17zM18,23H19V24H18zM20,23H21V24H20zM21,23H22V24H21zM25,23H26V24H25zM26,23H27V24H26zM29,23H30V24H29zM32,23H33V24H32zM37,23H38V24H37zM3,24H4V25H3zM7,24H8V25H7zM8,24H9V25H8zM10,24H11V25H10zM14,24H15V25H14zM17,24H18V25H17zM18,24H19V25H18zM20,24H21V25H20zM21,24H22V25H21zM22,24H23V25H22zM25,24H26V25H25zM28,24H29V25H28zM29,24H30V25H29zM35,24H36V25H35zM36,24H37V25H36zM38,24H39V25H38zM6,25H7V26H6zM9,25H10V26H9zM11,25H12V26H11zM14,25H15V26H14zM17,25H18V26H17zM18,25H19V26H18zM22,25H23V26H22zM24,25H25V26H24zM25,25H26V26H25zM28,25H29V26H28zM30,25H31V26H30zM31,25H32V26H31zM32,25H33V26H32zM33,25H34V26H33zM34,25H35V26H34zM35,25H36V26H35zM38,25H39V26H38zM2,26H3V27H2zM4,26H5V27H4zM7,26H8V27H7zM8,26H9V27H8zM11,26H12V27H11zM13,26H14V27H13zM15,26H16V27H15zM17,26H18V27H17zM18,26H19V27H18zM21,26H22V27H21zM24,26H25V27H24zM25,26H26V27H25zM26,26H27V27H26zM29,26H30V27H29zM32,26H33V27H32zM33,26H34V27H33zM38,26H39V27H38zM5,27H6V28H5zM6,27H7V28H6zM10,27H11V28H10zM14,27H15V28H14zM16,27H17V28H16zM21,27H22V28H21zM22,27H23V28H22zM23,27H24V28H23zM24,27H25V28H24zM26,27H27V28H26zM27,27H28V28H27zM30,27H31V28H30zM31,27H32V28H31zM33,27H34V28H33zM38,27H39V28H38zM2,28H3V29H2zM3,28H4V29H3zM4,28H5V29H4zM5,28H6V29H5zM8,28H9V29H8zM9,28H10V29H9zM10,28H11V29H10zM13,28H14V29H13zM14,28H15V29H14zM15,28H16V29H15zM16,28H17V29H16zM17,28H18V29H17zM19,28H20V29H19zM20,28H21V29H20zM21,28H22V29H21zM23,28H24V29H23zM25,28H26V29H25zM27,28H28V29H27zM29,28H30V29H29zM31,28H32V29H31zM34,28H35V29H34zM36,28H37V29H36zM38,28H39V29H38zM4,29H5V30H4zM5,29H6V30H5zM6,29H7V30H6zM7,29H8V30H7zM13,29H14V30H13zM17,29H18V30H17zM18,29H19V30H18zM21,29H22V30H21zM26,29H27V30H26zM30,29H31V30H30zM31,29H32V30H31zM33,29H34V30H33zM35,29H36V30H35zM38,29H39V30H38zM2,30H3V31H2zM3,30H4V31H3zM5,30H6V31H5zM8,30H9V31H8zM11,30H12V31H11zM13,30H14V31H13zM14,30H15V31H14zM17,30H18V31H17zM19,30H20V31H19zM21,30H22V31H21zM22,30H23V31H22zM25,30H26V31H25zM26,30H27V31H26zM30,30H31V31H30zM31,30H32V31H31zM32,30H33V31H32zM33,30H34V31H33zM34,30H35V31H34zM35,30H36V31H35zM37,30H38V31H37zM38,30H39V31H38zM10,31H11V32H10zM12,31H13V32H12zM13,31H14V32H13zM14,31H15V32H14zM15,31H16V32H15zM17,31H18V32H17zM19,31H20V32H19zM20,31H21V32H20zM21,31H22V32H21zM22,31H23V32H22zM23,31H24V32H23zM25,31H26V32H25zM26,31H27V32H26zM27,31H28V32H27zM30,31H31V32H30zM34,31H35V32H34zM37,31H38V32H37zM38,31H39V32H38zM2,32H3V33H2zM3,32H4V33H3zM4,32H5V33H4zM5,32H6V33H5zM6,32H7V33H6zM7,32H8V33H7zM8,32H9V33H8zM10,32H11V33H10zM12,32H13V33H12zM17,32H18V33H17zM18,32H19V33H18zM19,32H20V33H19zM20,32H21V33H20zM21,32H22V33H21zM25,32H26V33H25zM26,32H27V33H26zM27,32H28V33H27zM28,32H29V33H28zM30,32H31V33H30zM32,32H33V33H32zM34,32H35V33H34zM38,32H39V33H38zM2,33H3V34H2zM8,33H9V34H8zM11,33H12V34H11zM12,33H13V34H12zM13,33H14V34H13zM15,33H16V34H15zM16,33H17V34H16zM17,33H18V34H17zM20,33H21V34H20zM21,33H22V34H21zM22,33H23V34H22zM24,33H25V34H24zM25,33H26V34H25zM26,33H27V34H26zM28,33H29V34H28zM29,33H30V34H29zM30,33H31V34H30zM34,33H35V34H34zM38,33H39V34H38zM2,34H3V35H2zM4,34H5V35H4zM5,34H6V35H5zM6,34H7V35H6zM8,34H9V35H8zM11,34H12V35H11zM12,34H13V35H12zM14,34H15V35H14zM15,34H16V35H15zM16,34H17V35H16zM18,34H19V35H18zM28,34H29V35H28zM29,34H30V35H29zM30,34H31V35H30zM31,34H32V35H31zM32,34H33V35H32zM33,34H34V35H33zM34,34H35V35H34zM38,34H39V35H38zM2,35H3V36H2zM4,35H5V36H4zM5,35H6V36H5zM6,35H7V36H6zM8,35H9V36H8zM11,35H12V36H11zM13,35H14V36H13zM14,35H15V36H14zM15,35H16V36H15zM17,35H18V36H17zM18,35H19V36H18zM21,35H22V36H21zM22,35H23V36H22zM24,35H25V36H24zM25,35H26V36H25zM26,35H27V36H26zM28,35H29V36H28zM30,35H31V36H30zM31,35H32V36H31zM34,35H35V36H34zM35,35H36V36H35zM37,35H38V36H37zM2,36H3V37H2zM4,36H5V37H4zM5,36H6V37H5zM6,36H7V37H6zM8,36H9V37H8zM10,36H11V37H10zM11,36H12V37H11zM16,36H17V37H16zM17,36H18V37H17zM18,36H19V37H18zM20,36H21V37H20zM21,36H22V37H21zM23,36H24V37H23zM25,36H26V37H25zM26,36H27V37H26zM27,36H28V37H27zM30,36H31V37H30zM33,36H34V37H33zM34,36H35V37H34zM36,36H37V37H36zM38,36H39V37H38zM2,37H3V38H2zM8,37H9V38H8zM12,37H13V38H12zM13,37H14V38H13zM16,37H17V38H16zM17,37H18V38H17zM18,37H19V38H18zM22,37H23V38H22zM24,37H25V38H24zM28,37H29V38H28zM30,37H31V38H30zM31,37H32V38H31zM34,37H35V38H34zM35,37H36V38H35zM2,38H3V39H2zM3,38H4V39H3zM4,38H5V39H4zM5,38H6V39H5zM6,38H7V39H6zM7,38H8V39H7zM8,38H9V39H8zM10,38H11V39H10zM11,38H12V39H11zM15,38H16V39H15zM18,38H19V39H18zM19,38H20V39H19zM21,38H22V39H21zM22,38H23V39H22zM24,38H25V39H24zM26,38H27V39H26zM28,38H29V39H28zM29,38H30V39H29zM30,38H31V39H30zM31,38H32V39H31zM32,38H33V39H32zM33,38H34V39H33zM36,38H37V39H36zM38,38H39V39H38z" fill="#262A2E"/></svg>
+        </div>
+        <div class="qr-label" style="font-size:14px;" id="txtQr3Label">Catàleg d'habilitats</div>
+        <p class="qr-note" id="txtQr3Note">PDF amb la descripció de cadascuna de les habilitats.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 4 — RANKS ============ -->
+  <section class="slide" data-accent="maths">
+    <div class="eyebrow"><span class="dot"></span><span id="txtS4Eyebrow">04 — Habilitats STEAM</span><span class="rule"></span></div>
+    <h2 class="title" id="txtS4Title">Un rang de l'1 al 50</h2>
+    <p class="subtitle" id="txtS4Sub">El rang final surt de creuar dues coses: una nota de rúbrica (1–5) i el nivell de dificultat del projecte.</p>
+
+    <div class="slide-body rank-slide-body">
+      <div class="rank-steps">
+        <div class="rank-step s1">
+          <div class="stag" id="txtPas1Tag">Pas 1</div>
+          <h4 id="txtPas1H">Rúbrica base (1–5)</h4>
+          <p id="txtPas1P">Cada habilitat es puntua d'1 a 5 amb una rúbrica pròpia, segons com de present i central és dins del projecte. Aquesta nota fixa el <b>bloc</b> de 10 on caurà el rang final.</p>
+        </div>
+        <div class="rank-step s2">
+          <div class="stag" id="txtPas2Tag">Pas 2</div>
+          <h4 id="txtPas2H">Nivell del projecte</h4>
+          <p id="txtPas2P">Dins d'aquest bloc, el nivell de dificultat del projecte (de Niv.1 a Niv.5, amb intervals intermedis) afina la posició exacta, donant el rang final de l'1 al 50.</p>
+          <div class="rank-scale-bar"></div>
+          <div class="rank-scale-labels"><span>1</span><span>50</span></div>
+        </div>
+      </div>
+
+      <div class="rank-table-frame">
+        <div class="rt-head">
+          <h4 id="txtRtHead">Taula final de punts (escala 1–50)</h4>
+          <span id="txtRtSub">Rúbrica × Nivell de projecte</span>
+        </div>
+        <div class="rank-scroll">
+          <table class="rank-table">
+            <colgroup>
+              <col class="c-label">
+              <col><col><col><col><col><col><col><col><col>
+            </colgroup>
+            <thead>
+              <tr id="rankTableHead"></tr>
+            </thead>
+            <tbody id="rankTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 5 — XP FORMULA ============ -->
+  <section class="slide" data-accent="engineering">
+    <div class="eyebrow"><span class="dot"></span><span id="txtS5Eyebrow">05 — Sistema de punts</span><span class="rule"></span></div>
+    <h2 class="title" id="txtS5Title">Com funcionen els punts</h2>
+    <p class="subtitle" id="txtS5Sub">Cada habilitat que treballa un projecte es tradueix directament en experiència (XP) amb una fórmula senzilla.</p>
+
+    <div class="slide-body xp-slide-body">
+      <div class="equation">
+        <div class="eq-tag"><span class="lbl" id="txtEqLbl1">Experiència</span><span class="eq-part">XP</span></div>
+        <span class="eq-op">=</span>
+        <div class="eq-tag"><span class="lbl" id="txtEqLbl2">Rang habilitat</span><span class="eq-part" id="txtEqRangLabel">Rang</span></div>
+        <span class="eq-op">×</span>
+        <div class="eq-tag"><span class="lbl" id="txtEqLbl3">Multiplicador</span><span class="eq-part" style="color:var(--brand-yellow-deep);">4</span></div>
+      </div>
+
+      <div class="eq-examples">
+        <div class="eq-ex-card">
+          <div class="r" id="txtEx1">RANG 3 · Contacte</div>
+          <div class="calc">3 × 4</div>
+          <div class="xp">12 <span>XP</span></div>
+        </div>
+        <div class="eq-ex-card">
+          <div class="r" id="txtEx2">RANG 13 · Nuclear</div>
+          <div class="calc">13 × 4</div>
+          <div class="xp">52 <span>XP</span></div>
+        </div>
+        <div class="eq-ex-card">
+          <div class="r" id="txtEx3">RANG 50 · Màxim</div>
+          <div class="calc">50 × 4</div>
+          <div class="xp">200 <span>XP</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 6 — THRESHOLDS ============ -->
+  <section class="slide" data-accent="technology">
+    <div class="eyebrow"><span class="dot"></span><span id="txtS6Eyebrow">06 — Progressió</span><span class="rule"></span></div>
+    <h2 class="title" id="txtS6Title">De nivell en nivell</h2>
+    <p class="subtitle" id="txtS6Sub">L'XP acumulada es compta en tres escales alhora, cadascuna amb els seus propis llindars per pujar de nivell.</p>
+
+    <div class="slide-body th-slide-body">
+      <div class="th-table-frame">
+        <div class="th-scroll">
+          <table class="th-table">
+            <colgroup>
+              <col class="c-lvl"><col class="c-num"><col class="c-num"><col class="c-num">
+            </colgroup>
+            <thead>
+              <tr><th id="txtThLvl">Nivell</th><th id="txtThSkill">Habilitat</th><th id="txtThBranch">Branca</th><th id="txtThGlobal">Global</th></tr>
+            </thead>
+            <tbody id="thBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="scope-cards">
+        <div class="scope-card skill">
+          <div class="tag" id="txtScTag1">Habilitat</div>
+          <h4 id="txtScH1">Nivell per habilitat</h4>
+          <p id="txtScP1">Cada habilitat STEAM (p. ex. "Prototipatge Ràpid") acumula el seu propi XP i puja de nivell de manera independent.</p>
+        </div>
+        <div class="scope-card branch">
+          <div class="tag" id="txtScTag2">Branca</div>
+          <h4 id="txtScH2">Nivell per branca</h4>
+          <p id="txtScP2">Les habilitats s'agrupen en 6 branques (Ciència, Enginyeria, Art, Matemàtiques, Tecnologia, Transversal), que pugen de nivell sumant l'XP de les seves habilitats.</p>
+        </div>
+        <div class="scope-card global">
+          <div class="tag" id="txtScTag3">Global</div>
+          <h4 id="txtScH3">Nivell global</h4>
+          <p id="txtScP3">Tot l'XP de totes les branques alimenta un únic nivell general, reflex del progrés global de l'alumne.</p>
+        </div>
+        <a class="btn ghost" href="https://mapesdeprojectes.vercel.app/" target="_blank" rel="noopener">
+          <span id="txtVeurePerfil">Veure el perfil a la demo</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H8M17 7V16"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 7 — TRAÇAR UN CAMÍ DINS D'UN MAPA ============ -->
+  <section class="slide" data-accent="science">
+    <div class="eyebrow"><span class="dot"></span><span id="txtS7Eyebrow">07 — A la pràctica</span><span class="rule"></span></div>
+    <h2 class="title" id="txtS7Title">Com traçar un camí dins d'un mapa</h2>
+    <p class="subtitle" id="txtS7Sub">De projecte en projecte, seguint la recomanació de cada connexió.</p>
+
+    <div class="slide-body path-body">
+      <div class="path-steps">
+        <div class="path-step">
+          <div class="pnum">1</div>
+          <div><h4 id="txtPs1H">Comença pel projecte d'inici</h4><p id="txtPs1P">Cada mapa té un projecte marcat com a punt de partida (★ Inici), pensat per al nivell inicial del grup.</p></div>
+        </div>
+        <div class="path-step">
+          <div class="pnum">2</div>
+          <div><h4 id="txtPs2H">Mira les connexions de sortida</h4><p id="txtPs2P">En acabar un projecte, es consulten les connexions disponibles i el seu <b>% de recomanació</b> cap al següent.</p></div>
+        </div>
+        <div class="path-step">
+          <div class="pnum">3</div>
+          <div><h4 id="txtPs3H">Tria el següent pas</h4><p id="txtPs3P">Es segueix la connexió més recomanada segons el resultat de l'alumne, i el camí es va traçant projecte a projecte.</p></div>
+        </div>
+        <div class="path-step">
+          <div class="pnum">4</div>
+          <div><h4 id="txtPs4H">Prova-ho ara mateix</h4><p id="txtPs4P">Escaneja el codi QR i traça el teu propi camí dins del mapa de Màquines Motoritzades, en directe.</p></div>
+        </div>
+      </div>
+
+      <div class="qr-card">
+        <div class="qr-frame">
+          <svg viewBox="0 0 33 33" xmlns="http://www.w3.org/2000/svg"><path d="M2,2H3V3H2zM3,2H4V3H3zM4,2H5V3H4zM5,2H6V3H5zM6,2H7V3H6zM7,2H8V3H7zM8,2H9V3H8zM14,2H15V3H14zM17,2H18V3H17zM18,2H19V3H18zM20,2H21V3H20zM21,2H22V3H21zM22,2H23V3H22zM24,2H25V3H24zM25,2H26V3H25zM26,2H27V3H26zM27,2H28V3H27zM28,2H29V3H28zM29,2H30V3H29zM30,2H31V3H30zM2,3H3V4H2zM8,3H9V4H8zM11,3H12V4H11zM13,3H14V4H13zM14,3H15V4H14zM20,3H21V4H20zM22,3H23V4H22zM24,3H25V4H24zM30,3H31V4H30zM2,4H3V5H2zM4,4H5V5H4zM5,4H6V5H5zM6,4H7V5H6zM8,4H9V5H8zM10,4H11V5H10zM11,4H12V5H11zM12,4H13V5H12zM14,4H15V5H14zM16,4H17V5H16zM18,4H19V5H18zM22,4H23V5H22zM24,4H25V5H24zM26,4H27V5H26zM27,4H28V5H27zM28,4H29V5H28zM30,4H31V5H30zM2,5H3V6H2zM4,5H5V6H4zM5,5H6V6H5zM6,5H7V6H6zM8,5H9V6H8zM10,5H11V6H10zM11,5H12V6H11zM13,5H14V6H13zM19,5H20V6H19zM20,5H21V6H20zM21,5H22V6H21zM24,5H25V6H24zM26,5H27V6H26zM27,5H28V6H27zM28,5H29V6H28zM30,5H31V6H30zM2,6H3V7H2zM4,6H5V7H4zM5,6H6V7H5zM6,6H7V7H6zM8,6H9V7H8zM10,6H11V7H10zM15,6H16V7H15zM16,6H17V7H16zM17,6H18V7H17zM19,6H20V7H19zM20,6H21V7H20zM21,6H22V7H21zM22,6H23V7H22zM24,6H25V7H24zM26,6H27V7H26zM27,6H28V7H27zM28,6H29V7H28zM30,6H31V7H30zM2,7H3V8H2zM8,7H9V8H8zM10,7H11V8H10zM11,7H12V8H11zM12,7H13V8H12zM13,7H14V8H13zM14,7H15V8H14zM15,7H16V8H15zM16,7H17V8H16zM17,7H18V8H17zM18,7H19V8H18zM19,7H20V8H19zM22,7H23V8H22zM24,7H25V8H24zM30,7H31V8H30zM2,8H3V9H2zM3,8H4V9H3zM4,8H5V9H4zM5,8H6V9H5zM6,8H7V9H6zM7,8H8V9H7zM8,8H9V9H8zM10,8H11V9H10zM12,8H13V9H12zM14,8H15V9H14zM16,8H17V9H16zM18,8H19V9H18zM20,8H21V9H20zM22,8H23V9H22zM24,8H25V9H24zM25,8H26V9H25zM26,8H27V9H26zM27,8H28V9H27zM28,8H29V9H28zM29,8H30V9H29zM30,8H31V9H30zM10,9H11V10H10zM12,9H13V10H12zM15,9H16V10H15zM18,9H19V10H18zM20,9H21V10H20zM22,9H23V10H22zM2,10H3V11H2zM4,10H5V11H4zM5,10H6V11H5zM6,10H7V11H6zM7,10H8V11H7zM8,10H9V11H8zM11,10H12V11H11zM12,10H13V11H12zM14,10H15V11H14zM16,10H17V11H16zM19,10H20V11H19zM21,10H22V11H21zM24,10H25V11H24zM25,10H26V11H25zM26,10H27V11H26zM27,10H28V11H27zM28,10H29V11H28zM4,11H5V12H4zM9,11H10V12H9zM11,11H12V12H11zM12,11H13V12H12zM21,11H22V12H21zM22,11H23V12H22zM23,11H24V12H23zM24,11H25V12H24zM26,11H27V12H26zM30,11H31V12H30zM2,12H3V13H2zM4,12H5V13H4zM5,12H6V13H5zM6,12H7V13H6zM7,12H8V13H7zM8,12H9V13H8zM17,12H18V13H17zM19,12H20V13H19zM22,12H23V13H22zM24,12H25V13H24zM25,12H26V13H25zM3,13H4V14H3zM7,13H8V14H7zM11,13H12V14H11zM12,13H13V14H12zM16,13H17V14H16zM17,13H18V14H17zM20,13H21V14H20zM25,13H26V14H25zM27,13H28V14H27zM29,13H30V14H29zM2,14H3V15H2zM3,14H4V15H3zM4,14H5V15H4zM5,14H6V15H5zM6,14H7V15H6zM8,14H9V15H8zM11,14H12V15H11zM14,14H15V15H14zM17,14H18V15H17zM18,14H19V15H18zM19,14H20V15H19zM27,14H28V15H27zM28,14H29V15H28zM2,15H3V16H2zM3,15H4V16H3zM4,15H5V16H4zM6,15H7V16H6zM9,15H10V16H9zM11,15H12V16H11zM12,15H13V16H12zM13,15H14V16H13zM14,15H15V16H14zM15,15H16V16H15zM16,15H17V16H16zM18,15H19V16H18zM20,15H21V16H20zM21,15H22V16H21zM22,15H23V16H22zM24,15H25V16H24zM25,15H26V16H25zM26,15H27V16H26zM30,15H31V16H30zM2,16H3V17H2zM4,16H5V17H4zM5,16H6V17H5zM8,16H9V17H8zM9,16H10V17H9zM13,16H14V17H13zM14,16H15V17H14zM15,16H16V17H15zM16,16H17V17H16zM17,16H18V17H17zM22,16H23V17H22zM23,16H24V17H23zM25,16H26V17H25zM26,16H27V17H26zM27,16H28V17H27zM28,16H29V17H28zM4,17H5V18H4zM7,17H8V18H7zM9,17H10V18H9zM10,17H11V18H10zM12,17H13V18H12zM13,17H14V18H13zM15,17H16V18H15zM17,17H18V18H17zM21,17H22V18H21zM22,17H23V18H22zM23,17H24V18H23zM24,17H25V18H24zM25,17H26V18H25zM29,17H30V18H29zM3,18H4V19H3zM4,18H5V19H4zM5,18H6V19H5zM6,18H7V19H6zM7,18H8V19H7zM8,18H9V19H8zM9,18H10V19H9zM10,18H11V19H10zM14,18H15V19H14zM16,18H17V19H16zM17,18H18V19H17zM18,18H19V19H18zM19,18H20V19H19zM27,18H28V19H27zM28,18H29V19H28zM2,19H3V20H2zM3,19H4V20H3zM5,19H6V20H5zM6,19H7V20H6zM9,19H10V20H9zM12,19H13V20H12zM14,19H15V20H14zM18,19H19V20H18zM21,19H22V20H21zM22,19H23V20H22zM24,19H25V20H24zM25,19H26V20H25zM26,19H27V20H26zM28,19H29V20H28zM30,19H31V20H30zM2,20H3V21H2zM4,20H5V21H4zM8,20H9V21H8zM10,20H11V21H10zM11,20H12V21H11zM12,20H13V21H12zM13,20H14V21H13zM14,20H15V21H14zM17,20H18V21H17zM18,20H19V21H18zM19,20H20V21H19zM20,20H21V21H20zM22,20H23V21H22zM25,20H26V21H25zM26,20H27V21H26zM28,20H29V21H28zM2,21H3V22H2zM5,21H6V22H5zM6,21H7V22H6zM13,21H14V22H13zM16,21H17V22H16zM17,21H18V22H17zM20,21H21V22H20zM22,21H23V22H22zM25,21H26V22H25zM26,21H27V22H26zM29,21H30V22H29zM2,22H3V23H2zM5,22H6V23H5zM7,22H8V23H7zM8,22H9V23H8zM10,22H11V23H10zM12,22H13V23H12zM13,22H14V23H13zM14,22H15V23H14zM17,22H18V23H17zM19,22H20V23H19zM21,22H22V23H21zM22,22H23V23H22zM23,22H24V23H23zM24,22H25V23H24zM25,22H26V23H25zM26,22H27V23H26zM28,22H29V23H28zM29,22H30V23H29zM30,22H31V23H30zM10,23H11V24H10zM11,23H12V24H11zM13,23H14V24H13zM14,23H15V24H14zM15,23H16V24H15zM16,23H17V24H16zM18,23H19V24H18zM20,23H21V24H20zM22,23H23V24H22zM26,23H27V24H26zM27,23H28V24H27zM28,23H29V24H28zM29,23H30V24H29zM30,23H31V24H30zM2,24H3V25H2zM3,24H4V25H3zM4,24H5V25H4zM5,24H6V25H5zM6,24H7V25H6zM7,24H8V25H7zM8,24H9V25H8zM11,24H12V25H11zM12,24H13V25H12zM13,24H14V25H13zM14,24H15V25H14zM15,24H16V25H15zM16,24H17V25H16zM17,24H18V25H17zM19,24H20V25H19zM20,24H21V25H20zM21,24H22V25H21zM22,24H23V25H22zM24,24H25V25H24zM26,24H27V25H26zM27,24H28V25H27zM28,24H29V25H28zM2,25H3V26H2zM8,25H9V26H8zM10,25H11V26H10zM11,25H12V26H11zM13,25H14V26H13zM15,25H16V26H15zM18,25H19V26H18zM22,25H23V26H22zM26,25H27V26H26zM30,25H31V26H30zM2,26H3V27H2zM4,26H5V27H4zM5,26H6V27H5zM6,26H7V27H6zM8,26H9V27H8zM10,26H11V27H10zM16,26H17V27H16zM19,26H20V27H19zM22,26H23V27H22zM23,26H24V27H23zM24,26H25V27H24zM25,26H26V27H25zM26,26H27V27H26zM28,26H29V27H28zM29,26H30V27H29zM2,27H3V28H2zM4,27H5V28H4zM5,27H6V28H5zM6,27H7V28H6zM8,27H9V28H8zM10,27H11V28H10zM11,27H12V28H11zM14,27H15V28H14zM15,27H16V28H15zM20,27H21V28H20zM27,27H28V28H27zM28,27H29V28H28zM29,27H30V28H29zM30,27H31V28H30zM2,28H3V29H2zM4,28H5V29H4zM5,28H6V29H5zM6,28H7V29H6zM8,28H9V29H8zM10,28H11V29H10zM11,28H12V29H11zM12,28H13V29H12zM14,28H15V29H14zM15,28H16V29H15zM16,28H17V29H16zM17,28H18V29H17zM21,28H22V29H21zM24,28H25V29H24zM25,28H26V29H25zM26,28H27V29H26zM27,28H28V29H27zM28,28H29V29H28zM29,28H30V29H29zM2,29H3V30H2zM8,29H9V30H8zM17,29H18V30H17zM18,29H19V30H18zM21,29H22V30H21zM22,29H23V30H22zM23,29H24V30H23zM26,29H27V30H26zM27,29H28V30H27zM29,29H30V30H29zM2,30H3V31H2zM3,30H4V31H3zM4,30H5V31H4zM5,30H6V31H5zM6,30H7V31H6zM7,30H8V31H7zM8,30H9V31H8zM10,30H11V31H10zM11,30H12V31H11zM12,30H13V31H12zM15,30H16V31H15zM19,30H20V31H19zM21,30H22V31H21zM24,30H25V31H24zM25,30H26V31H25zM26,30H27V31H26zM28,30H29V31H28z" fill="#262A2E"/></svg>
+        </div>
+        <div class="qr-label" id="txtQr7Label">Escaneja i fes la demo</div>
+        <div class="qr-url">demo-rust-gamma.vercel.app</div>
+        <p class="qr-note" id="txtQr7Note">Traça el teu propi camí seguint les recomanacions del mapa.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SLIDE 8 — GENERAR CONTINGUT AMB HTML ============ -->
+  <section class="slide" data-accent="technology">
+    <div class="eyebrow"><span class="dot"></span><span id="txtS8Eyebrow">08 — Nova metodologia</span><span class="rule"></span></div>
+    <h2 class="title" id="txtS8Title">Generar contingut amb HTML</h2>
+    <p class="subtitle" id="txtS8Sub">Deixem Genially — un únic perfil per a tota l'empresa ens feia xocar i sobreescriure's entre companys — i passem a generar les presentacions amb IA (Claude) a partir de prompts.</p>
+
+    <div class="slide-body content-body">
+      <div class="content-features">
+        <div class="content-feature">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16.5 3.5 21 8l-6 6-4-1 1-4 4.5-4.5Z"/></svg></div>
+          <h4 id="txtF1H">Adéu al compte compartit</h4>
+          <p id="txtF1P">Genially només tenia un perfil per a tota l'empresa: quan hi treballàvem diverses persones alhora, ens sobreescrivíem canvis. Amb IA, cadascú genera el seu propi contingut sense dependre de cap compte comú.</p>
+        </div>
+        <div class="content-feature">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16M4 5v11a2 2 0 0 0 2 2h4l3 3 3-3h2a2 2 0 0 0 2-2V5"/></svg></div>
+          <h4 id="txtF2H">Prompts base ja preparats</h4>
+          <p id="txtF2P">Per a cada tipus de material hi haurà un prompt de partida ja definit, sobre el qual només cal treballar i afinar el contingut concret.</p>
+        </div>
+        <div class="content-feature">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div>
+          <h4 id="txtF3H">Dissenys predeterminats</h4>
+          <p id="txtF3P">Una identitat visual i una estructura ja definides, perquè cada presentació surti coherent amb la resta sense haver de dissenyar-la des de zero cada vegada.</p>
+        </div>
+        <div class="content-feature">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg></div>
+          <h4 id="txtF4H">Un sol fitxer autònom</h4>
+          <p id="txtF4P">Cada material és un únic HTML: es pot obrir a qualsevol navegador, enviar per correu o penjar a qualsevol lloc, sense dependències.</p>
+        </div>
+      </div>
+
+      <div class="content-callout">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg></div>
+        <p id="txtCallout"><b>Aquesta mateixa presentació n'és un exemple</b>: és un HTML amb el mapa de projectes incrustat i interactiu, no un seguit de captures fixes.</p>
+      </div>
+    </div>
+  </section>
+
+
+</div>
+
+<!-- ============ NAV ============ -->
+<div id="nav">
+  <span class="count mono"><span id="navCurrent">01</span> / <span id="navTotal">09</span></span>
+  <div id="navline"><div class="fill" id="navFill"></div></div>
+  <div class="navdots" id="navDots"></div>
+  <div class="arrows">
+    <button id="prevBtn" aria-label="Diapositiva anterior">‹</button>
+    <button id="nextBtn" aria-label="Diapositiva següent">›</button>
+  </div>
+</div>
+
+<script>
+
+
+/* ============================================================
+   I18N — Sistema de traducció CA / ES
+   ============================================================ */
+let currentLang = 'ca';
+const SKILL_ES = {"Abstracció":"Abstracción","Algorimització":"Algoritmización","Angles i girs":"Ángulos y giros","Animació Frame-to-Frame":"Animación Frame-to-Frame","Aprenentatge per Prova i Error":"Aprendizaje por Prueba y Error","Atenció als detalls":"Atención a los detalles","Biomimètica":"Biomimética","Col·laboració":"Colaboración","Composició Espacial":"Composición Espacial","Comprensió de mecanismes":"Comprensión de mecanismos","Curiositat Investigadora":"Curiosidad Investigadora","Depuració":"Depuración","Descomposició":"Descomposición","Descripció de processos":"Descripción de procesos","Disseny de Personatges":"Diseño de Personajes","Disseny estètic":"Diseño estético","Ergonomia del disseny":"Ergonomía del diseño","Escalat i proporció":"Escalado y proporción","Escenografia i Il·luminació":"Escenografía e Iluminación","Esdeveniments":"Eventos","Estabilitat estructural":"Estabilidad estructural","Estats de la matèria i materials":"Estados de la materia y materiales","Estimació de distàncies i temps":"Estimación de distancias y tiempo","Flexibilitat Mental":"Flexibilidad Mental","Formulació d'Hipòtesis":"Formulación de Hipótesis","Física (moviment i energia)":"Física (movimiento y energía)","Física de l'electricitat":"Física de la electricidad","Física de la gravetat":"Física de la gravedad","Física del fregament":"Física del rozamiento","Geometria de sòlids":"Geometría de sólidos","Gestió de Variables":"Gestión de Variables","Gestió del temps":"Gestión del tiempo","Hosting":"Hosting","Interacció oral funcional":"Interacción oral funcional","Iteració":"Iteración","Lectura de simbologia i text":"Lectura de simbología y texto","Lideratge distribuït":"Liderazgo distribuido","Lògica condicional":"Lógica condicional","Manteniment Tecnològic":"Mantenimiento Tecnológico","Maquinari i connectivitat":"Hardware y conectividad","Mecànica simple":"Mecánica simple","Modelatge 3D":"Modelado 3D","Motricitat fina":"Motricidad fina","Navegació en entorns 360º":"Navegación en entornos 360º","Operadors lògics":"Operadores lógicos","Optimització de recursos":"Optimización de recursos","Orientació en coordenades":"Orientación en coordenadas","Orientació espacial bàsica":"Orientación espacial básica","Paral·lelisme":"Paralelismo","Pensament crític":"Pensamiento crítico","Personalització":"Personalización","Planificació estratègica":"Planificación estratégica","Presa de decisions":"Toma de decisiones","Probabilitat i Atzar":"Probabilidad y Azar","Prototipatge Ràpid":"Prototipado Rápido","Recollida i Representació de Dades":"Recogida y Representación de Datos","Reconeixement de patrons":"Reconocimiento de patrones","Relació Causa-Efecte":"Relación Causa-Efecto","Repartiment de tasques":"Reparto de tareas","Resiliència":"Resiliencia","Seguretat digital":"Seguridad digital","Seguretat en el Disseny":"Seguridad en el Diseño","Seqüenciació":"Secuenciación","Simetria":"Simetría","Sincronització mecànica":"Sincronización mecánica","Storytelling":"Storytelling","Teoria del Color Aplicada":"Teoría del Color Aplicada","Transmissió de moviment":"Transmisión de movimiento","Visió espacial":"Visión espacial","Vocabulari tècnic específic":"Vocabulario técnico específico","Xarxes sense fil":"Redes inalámbricas","Ús de sensors":"Uso de sensores"};
+const BRANCH_NAME_ES = {
+  "S — Ciència": "S — Ciencia",
+  "T — Tecnologia": "T — Tecnología",
+  "E — Enginyeria": "E — Ingeniería",
+  "A — Art": "A — Arte",
+  "M — Matemàtiques": "M — Matemáticas",
+  "Competències Transversals": "Competencias Transversales"
+};
+function skillLabel(name){ return currentLang==='es' ? (SKILL_ES[name]||name) : name; }
+function branchLabel(name){ return currentLang==='es' ? (BRANCH_NAME_ES[name]||name) : name; }
+function setText(id, val){ const el = document.getElementById(id); if(el) el.textContent = val; }
+function setHTML(id, val){ const el = document.getElementById(id); if(el) el.innerHTML = val; }
+
+const I18N = {
+ca: {
+  kicker: "Presentació interna",
+  coverTitle: "Projecte<br>Pedagògic IGNITE",
+  coverSub: "Mapes de projectes",
+  coverCol1: "Robòtica &amp; Coding",
+  ambitLabel: "Àmbit",
+  ambit: "Formació pedagògica",
+  dataLabel: "Data",
+  data: "Dimarts 1 de setembre de 2026",
+  indexEyebrow: "Índex",
+  indexTitle: "Què veurem",
+  indexSub: "Set blocs: del procés de treball fins a la proposta de futur.",
+  indexItems: [
+    ['01','Abans i després','Com ha canviat l\'estructura pedagògica', 2],
+    ['02','Mapes de projectes','Demo — Màquines Motoritzades', 3],
+    ['03','Habilitats','Les 6 branques STEAM i transversals', 4],
+    ['04','Habilitats STEAM','Rangs de l\'1 al 50 per projecte', 5],
+    ['05','Sistema de punts','Fórmula XP = Rang × 4', 6],
+    ['06','Progressió','Nivells per habilitat, branca i global', 7],
+    ['07','Traçar un camí','Com es navega un mapa de projectes', 8],
+    ['08','Generar contingut amb HTML','Materials interactius i autònoms', 9],
+  ],
+  s1Eyebrow: "01 — Reestructuració",
+  s1Title: "Abans i després",
+  s1Sub: "Com ha canviat la manera d'organitzar i seguir els projectes STEAM.",
+  abansPill: "Abans", abansH3: "Estructura antiga",
+  despresPill: "Després", despresH3: "Nova estructura",
+  before: [
+    "Projectes solts, sense cap ordre ni connexió entre ells.",
+    "Les habilitats treballades no estaven definides ni mesurades.",
+    "Cap sistema de punts ni de progressió per a l'alumnat.",
+    "Validació informal, sense criteri escrit ni seguiment.",
+    "Material de presentació estàtic, fet a mà cada vegada.",
+  ],
+  after: [
+    "<b>Mapes de projectes</b> dinàmics, amb rutes de progressió i % de recomanació.",
+    "<b>73 habilitats STEAM</b> catalogades, amb un rang de l'1 al 50 per projecte.",
+    "<b>Sistema de punts (XP)</b> i nivells per habilitat, branca i global.",
+    "<b>Criteri d'avaluació</b> clar: validat, en revisió o rebutjat.",
+    "<b>Contingut generat amb HTML</b>: interactiu, dinàmic i sempre actualitzat.",
+  ],
+  s2Eyebrow: "02 — Mapes de projectes",
+  s2Title: "Mapa de projectes",
+  s2Sub: "Màquines motoritzades. Cada projecte connecta amb els següents mitjançant un percentatge de recomanació, segons si l'alumne l'ha superat o necessita reforç.",
+  mapFrame: "El mapa és dinàmic: clica un projecte per veure'n el detall i les seves connexions de sortida amb el <b>% de recomanació</b> cap al projecte següent.",
+  legendOut: "Connexions de sortida",
+  legendIn: "Connexions d'entrada",
+  openDemo: "Obrir la demo completa",
+  liveDemo: "Demo en directe — Màquines Motoritzades",
+  detailEmpty: "Selecciona un projecte del mapa per veure el detall, les hores i les connexions de sortida.",
+  ampliar: "Ampliar", reduir: "Reduir",
+  zoomOutLbl: "Redueix", zoomResetLbl: "Ajusta a la vista", zoomInLbl: "Amplia",
+  s3Eyebrow: "03 — Habilitats",
+  s3Title: "Habilitats",
+  s3Sub: "Sis branques STEAM i transversals. Cada projecte treballa un conjunt d'aquestes habilitats.",
+  qr3Label: "Catàleg d'habilitats",
+  qr3Note: "PDF amb la descripció de cadascuna de les habilitats.",
+  s4Eyebrow: "04 — Habilitats STEAM",
+  s4Title: "Un rang de l'1 al 50",
+  s4Sub: "El rang final surt de creuar dues coses: una nota de rúbrica (1–5) i el nivell de dificultat del projecte.",
+  pas1Tag: "Pas 1", pas1H: "Rúbrica base (1–5)",
+  pas1P: "Cada habilitat es puntua d'1 a 5 amb una rúbrica pròpia, segons com de present i central és dins del projecte. Aquesta nota fixa el <b>bloc</b> de 10 on caurà el rang final.",
+  pas2Tag: "Pas 2", pas2H: "Nivell del projecte",
+  pas2P: "Dins d'aquest bloc, el nivell de dificultat del projecte (de Niv.1 a Niv.5, amb intervals intermedis) afina la posició exacta, donant el rang final de l'1 al 50.",
+  rtHead: "Taula final de punts (escala 1–50)",
+  rtSub: "Rúbrica × Nivell de projecte",
+  rubricaLabel: "Rúbrica",
+  s5Eyebrow: "05 — Sistema de punts",
+  s5Title: "Com funcionen els punts",
+  s5Sub: "Cada habilitat que treballa un projecte es tradueix directament en experiència (XP) amb una fórmula senzilla.",
+  eqLbl1: "Experiència", eqLbl2: "Rang habilitat", eqRang: "Rang", eqLbl3: "Multiplicador",
+  ex1: "RANG 3 · Contacte", ex2: "RANG 13 · Nuclear", ex3: "RANG 50 · Màxim",
+  s6Eyebrow: "06 — Progressió",
+  s6Title: "De nivell en nivell",
+  s6Sub: "L'XP acumulada es compta en tres escales alhora, cadascuna amb els seus propis llindars per pujar de nivell.",
+  thLvl: "Nivell", thSkill: "Habilitat", thBranch: "Branca", thGlobal: "Global",
+  nivellRow: "Nivell",
+  scTag1: "Habilitat", scH1: "Nivell per habilitat",
+  scP1: 'Cada habilitat STEAM (p. ex. "Prototipatge Ràpid") acumula el seu propi XP i puja de nivell de manera independent.',
+  scTag2: "Branca", scH2: "Nivell per branca",
+  scP2: "Les habilitats s'agrupen en 6 branques (Ciència, Enginyeria, Art, Matemàtiques, Tecnologia, Transversal), que pugen de nivell sumant l'XP de les seves habilitats.",
+  scTag3: "Global", scH3: "Nivell global",
+  scP3: "Tot l'XP de totes les branques alimenta un únic nivell general, reflex del progrés global de l'alumne.",
+  veurePerfil: "Veure el perfil a la demo",
+  s7Eyebrow: "07 — A la pràctica",
+  s7Title: "Com traçar un camí dins d'un mapa",
+  s7Sub: "De projecte en projecte, seguint la recomanació de cada connexió.",
+  ps1H: "Comença pel projecte d'inici", ps1P: "Cada mapa té un projecte marcat com a punt de partida (★ Inici), pensat per al nivell inicial del grup.",
+  ps2H: "Mira les connexions de sortida", ps2P: "En acabar un projecte, es consulten les connexions disponibles i el seu <b>% de recomanació</b> cap al següent.",
+  ps3H: "Tria el següent pas", ps3P: "Es segueix la connexió més recomanada segons el resultat de l'alumne, i el camí es va traçant projecte a projecte.",
+  ps4H: "Prova-ho ara mateix", ps4P: "Escaneja el codi QR i traça el teu propi camí dins del mapa de Màquines Motoritzades, en directe.",
+  qr7Label: "Escaneja i fes la demo",
+  qr7Note: "Traça el teu propi camí seguint les recomanacions del mapa.",
+  s8Eyebrow: "08 — Nova metodologia",
+  s8Title: "Generar contingut amb HTML",
+  s8Sub: "Deixem Genially — un únic perfil per a tota l'empresa ens feia xocar i sobreescriure's entre companys — i passem a generar les presentacions amb IA (Claude) a partir de prompts.",
+  f1H: "Adéu al compte compartit",
+  f1P: "Genially només tenia un perfil per a tota l'empresa: quan hi treballàvem diverses persones alhora, ens sobreescrivíem canvis. Amb IA, cadascú genera el seu propi contingut sense dependre de cap compte comú.",
+  f2H: "Prompts base ja preparats",
+  f2P: "Per a cada tipus de material hi haurà un prompt de partida ja definit, sobre el qual només cal treballar i afinar el contingut concret.",
+  f3H: "Dissenys predeterminats",
+  f3P: "Una identitat visual i una estructura ja definides, perquè cada presentació surti coherent amb la resta sense haver de dissenyar-la des de zero cada vegada.",
+  f4H: "Un sol fitxer autònom",
+  f4P: "Cada material és un únic HTML: es pot obrir a qualsevol navegador, enviar per correu o penjar a qualsevol lloc, sense dependències.",
+  callout: "<b>Aquesta mateixa presentació n'és un exemple</b>: és un HTML amb el mapa de projectes incrustat i interactiu, no un seguit de captures fixes.",
+  // Widget del mapa (detall del projecte)
+  mmInici: "★ Inici", mmNivell: "Nivell", mmFestivitat: "🎉 Festivitat",
+  mmHabilitatsTreb: "Habilitats treballades", mmConnexionsSortida: "Connexions de sortida",
+  mmSenseConnexions: "Sense connexions de sortida definides.",
+  mmBadgeInici: "★ INICI", mmBadgeFest: "🎉 FESTIVITAT",
+},
+es: {
+  kicker: "Presentación interna",
+  coverTitle: "Proyecto<br>Pedagógico IGNITE",
+  coverSub: "Mapas de proyectos",
+  coverCol1: "Robótica &amp; Coding",
+  ambitLabel: "Ámbito",
+  ambit: "Formación pedagógica",
+  dataLabel: "Fecha",
+  data: "Martes 1 de septiembre de 2026",
+  indexEyebrow: "Índice",
+  indexTitle: "Qué veremos",
+  indexSub: "Ocho bloques: del proceso de trabajo a la propuesta de futuro.",
+  indexItems: [
+    ['01','Antes y después','Cómo ha cambiado la estructura pedagógica', 2],
+    ['02','Mapas de proyectos','Demo — Máquinas Motorizadas', 3],
+    ['03','Habilidades','Las 6 ramas STEAM y transversales', 4],
+    ['04','Habilidades STEAM','Rangos del 1 al 50 por proyecto', 5],
+    ['05','Sistema de puntos','Fórmula XP = Rango × 4', 6],
+    ['06','Progresión','Niveles por habilidad, rama y global', 7],
+    ['07','Trazar un camino','Cómo se navega un mapa de proyectos', 8],
+    ['08','Generar contenido con HTML','Materiales interactivos y autónomos', 9],
+  ],
+  s1Eyebrow: "01 — Reestructuración",
+  s1Title: "Antes y después",
+  s1Sub: "Cómo ha cambiado la manera de organizar y seguir los proyectos STEAM.",
+  abansPill: "Antes", abansH3: "Estructura antigua",
+  despresPill: "Después", despresH3: "Nueva estructura",
+  before: [
+    "Proyectos sueltos, sin ningún orden ni conexión entre ellos.",
+    "Las habilidades trabajadas no estaban definidas ni medidas.",
+    "Ningún sistema de puntos ni de progresión para el alumnado.",
+    "Validación informal, sin criterio escrito ni seguimiento.",
+    "Material de presentación estático, hecho a mano cada vez.",
+  ],
+  after: [
+    "<b>Mapas de proyectos</b> dinámicos, con rutas de progresión y % de recomendación.",
+    "<b>73 habilidades STEAM</b> catalogadas, con un rango del 1 al 50 por proyecto.",
+    "<b>Sistema de puntos (XP)</b> y niveles por habilidad, rama y global.",
+    "<b>Criterio de evaluación</b> claro: validado, en revisión o rechazado.",
+    "<b>Contenido generado con HTML</b>: interactivo, dinámico y siempre actualizado.",
+  ],
+  s2Eyebrow: "02 — Mapas de proyectos",
+  s2Title: "Mapa de proyectos",
+  s2Sub: "Máquinas motorizadas. Cada proyecto conecta con los siguientes mediante un porcentaje de recomendación, según si el alumno lo ha superado o necesita refuerzo.",
+  mapFrame: "El mapa es dinámico: haz clic en un proyecto para ver su detalle y sus conexiones de salida con el <b>% de recomendación</b> hacia el proyecto siguiente.",
+  legendOut: "Conexiones de salida",
+  legendIn: "Conexiones de entrada",
+  openDemo: "Abrir la demo completa",
+  liveDemo: "Demo en directo — Máquinas Motorizadas",
+  detailEmpty: "Selecciona un proyecto del mapa para ver el detalle, las horas y las conexiones de salida.",
+  ampliar: "Ampliar", reduir: "Reducir",
+  zoomOutLbl: "Reduce", zoomResetLbl: "Ajusta a la vista", zoomInLbl: "Amplía",
+  s3Eyebrow: "03 — Habilidades",
+  s3Title: "Habilidades",
+  s3Sub: "Seis ramas STEAM y transversales. Cada proyecto trabaja un conjunto de estas habilidades.",
+  qr3Label: "Catálogo de habilidades",
+  qr3Note: "PDF con la descripción de cada una de las habilidades.",
+  s4Eyebrow: "04 — Habilidades STEAM",
+  s4Title: "Un rango del 1 al 50",
+  s4Sub: "El rango final surge de cruzar dos cosas: una nota de rúbrica (1–5) y el nivel de dificultad del proyecto.",
+  pas1Tag: "Paso 1", pas1H: "Rúbrica base (1–5)",
+  pas1P: "Cada habilidad se puntúa del 1 al 5 con una rúbrica propia, según lo presente y central que sea dentro del proyecto. Esta nota fija el <b>bloque</b> de 10 donde caerá el rango final.",
+  pas2Tag: "Paso 2", pas2H: "Nivel del proyecto",
+  pas2P: "Dentro de este bloque, el nivel de dificultad del proyecto (de Niv.1 a Niv.5, con intervalos intermedios) afina la posición exacta, dando el rango final del 1 al 50.",
+  rtHead: "Tabla final de puntos (escala 1–50)",
+  rtSub: "Rúbrica × Nivel de proyecto",
+  rubricaLabel: "Rúbrica",
+  s5Eyebrow: "05 — Sistema de puntos",
+  s5Title: "Cómo funcionan los puntos",
+  s5Sub: "Cada habilidad que trabaja un proyecto se traduce directamente en experiencia (XP) con una fórmula sencilla.",
+  eqLbl1: "Experiencia", eqLbl2: "Rango habilidad", eqRang: "Rango", eqLbl3: "Multiplicador",
+  ex1: "RANGO 3 · Contacto", ex2: "RANGO 13 · Nuclear", ex3: "RANGO 50 · Máximo",
+  s6Eyebrow: "06 — Progresión",
+  s6Title: "De nivel en nivel",
+  s6Sub: "El XP acumulado se cuenta en tres escalas a la vez, cada una con sus propios umbrales para subir de nivel.",
+  thLvl: "Nivel", thSkill: "Habilidad", thBranch: "Rama", thGlobal: "Global",
+  nivellRow: "Nivel",
+  scTag1: "Habilidad", scH1: "Nivel por habilidad",
+  scP1: 'Cada habilidad STEAM (p. ej. "Prototipado Rápido") acumula su propio XP y sube de nivel de forma independiente.',
+  scTag2: "Rama", scH2: "Nivel por rama",
+  scP2: "Las habilidades se agrupan en 6 ramas (Ciencia, Ingeniería, Arte, Matemáticas, Tecnología, Transversal), que suben de nivel sumando el XP de sus habilidades.",
+  scTag3: "Global", scH3: "Nivel global",
+  scP3: "Todo el XP de todas las ramas alimenta un único nivel general, reflejo del progreso global del alumno.",
+  veurePerfil: "Ver el perfil en la demo",
+  s7Eyebrow: "07 — En la práctica",
+  s7Title: "Cómo trazar un camino dentro de un mapa",
+  s7Sub: "De proyecto en proyecto, siguiendo la recomendación de cada conexión.",
+  ps1H: "Empieza por el proyecto inicial", ps1P: "Cada mapa tiene un proyecto marcado como punto de partida (★ Inicio), pensado para el nivel inicial del grupo.",
+  ps2H: "Mira las conexiones de salida", ps2P: "Al terminar un proyecto, se consultan las conexiones disponibles y su <b>% de recomendación</b> hacia el siguiente.",
+  ps3H: "Elige el siguiente paso", ps3P: "Se sigue la conexión más recomendada según el resultado del alumno, y el camino se va trazando proyecto a proyecto.",
+  ps4H: "Pruébalo ahora mismo", ps4P: "Escanea el código QR y traza tu propio camino dentro del mapa de Máquinas Motorizadas, en directo.",
+  qr7Label: "Escanea y haz la demo",
+  qr7Note: "Traza tu propio camino siguiendo las recomendaciones del mapa.",
+  s8Eyebrow: "08 — Nueva metodología",
+  s8Title: "Generar contenido con HTML",
+  s8Sub: "Dejamos Genially — un único perfil para toda la empresa nos hacía chocar y sobrescribirnos entre compañeros — y pasamos a generar las presentaciones con IA (Claude) a partir de prompts.",
+  f1H: "Adiós a la cuenta compartida",
+  f1P: "Genially solo tenía un perfil para toda la empresa: cuando trabajábamos varias personas a la vez, nos sobrescribíamos cambios. Con IA, cada persona genera su propio contenido sin depender de ninguna cuenta común.",
+  f2H: "Prompts base ya preparados",
+  f2P: "Para cada tipo de material habrá un prompt de partida ya definido, sobre el que solo hay que trabajar y afinar el contenido concreto.",
+  f3H: "Diseños predeterminados",
+  f3P: "Una identidad visual y una estructura ya definidas, para que cada presentación salga coherente con el resto sin tener que diseñarla desde cero cada vez.",
+  f4H: "Un solo archivo autónomo",
+  f4P: "Cada material es un único HTML: se puede abrir en cualquier navegador, enviar por correo o subir a cualquier sitio, sin dependencias.",
+  callout: "<b>Esta misma presentación es un ejemplo</b>: es un HTML con el mapa de proyectos incrustado e interactivo, no una serie de capturas fijas.",
+  mmInici: "★ Inicio", mmNivell: "Nivel", mmFestivitat: "🎉 Festividad",
+  mmHabilitatsTreb: "Habilidades trabajadas", mmConnexionsSortida: "Conexiones de salida",
+  mmSenseConnexions: "Sin conexiones de salida definidas.",
+  mmBadgeInici: "★ INICIO", mmBadgeFest: "🎉 FESTIVIDAD",
+}
+};
+
+const ACCENTS = {
+  science:'#3B82F6', engineering:'#F59E0B', art:'#EC4899',
+  maths:'#10B981', technology:'#8B5CF6', transversal:'#8A8D85'
+};
+const slides = Array.from(document.querySelectorAll('.slide'));
+const total = slides.length;
+let idx = 0;
+
+const dotsWrap = document.getElementById('navDots');
+slides.forEach((s,i)=>{
+  const b = document.createElement('button');
+  b.addEventListener('click', ()=>goTo(i));
+  dotsWrap.appendChild(b);
+});
+
+function render(){
+  slides.forEach((s,i)=>s.classList.toggle('active', i===idx));
+  Array.from(dotsWrap.children).forEach((d,i)=>d.classList.toggle('on', i===idx));
+  document.getElementById('navCurrent').textContent = String(idx+1).padStart(2,'0');
+  document.getElementById('navFill').style.width = ((idx+1)/total*100)+'%';
+}
+function goTo(i){ idx = Math.max(0, Math.min(total-1, i)); render(); }
+document.getElementById('prevBtn').addEventListener('click', ()=>goTo(idx-1));
+document.getElementById('nextBtn').addEventListener('click', ()=>goTo(idx+1));
+window.addEventListener('keydown', (e)=>{
+  if(['ArrowRight','PageDown',' '].includes(e.key)){ e.preventDefault(); goTo(idx+1); }
+  if(['ArrowLeft','PageUp'].includes(e.key)){ e.preventDefault(); goTo(idx-1); }
+});
+let touchX=null;
+window.addEventListener('touchstart', e=>touchX=e.touches[0].clientX);
+window.addEventListener('touchend', e=>{
+  if(touchX===null) return;
+  const dx = e.changedTouches[0].clientX - touchX;
+  if(Math.abs(dx)>60){ dx<0 ? goTo(idx+1) : goTo(idx-1); }
+  touchX=null;
+});
+document.getElementById('navTotal').textContent = String(total).padStart(2,'0');
+render();
+
+/* ---------- Índex: llista clicable ---------- */
+const indexWrap = document.getElementById('indexList');
+function renderIndex(){
+  indexWrap.innerHTML = '';
+  I18N[currentLang].indexItems.forEach(([num,title,desc,targetIdx])=>{
+    const el = document.createElement('div');
+    el.className = 'index-item';
+    el.innerHTML = `
+      <span class="inum">${num}</span>
+      <div><span class="ititle">${title}</span><span class="idesc">${desc}</span></div>`;
+    el.addEventListener('click', ()=>goTo(targetIdx));
+    indexWrap.appendChild(el);
+  });
+}
+renderIndex();
+
+/* ---------- Slide 3: 6 branques STEAM + transversal, cadascuna amb les seves habilitats reals ---------- */
+const BRANCHES = [{"code":"science","name":"S — Ciència","color":"#3B82F6","skills":["Aprenentatge per Prova i Error","Biomimètica","Curiositat Investigadora","Estats de la matèria i materials","Formulació d'Hipòtesis","Física (moviment i energia)","Física de l'electricitat","Física de la gravetat","Física del fregament","Recollida i Representació de Dades","Relació Causa-Efecte","Ús de sensors"]},{"code":"technology","name":"T — Tecnologia","color":"#8B5CF6","skills":["Depuració","Esdeveniments","Gestió de Variables","Hosting","Manteniment Tecnològic","Maquinari i connectivitat","Modelatge 3D","Navegació en entorns 360º","Paral·lelisme","Seguretat digital","Xarxes sense fil"]},{"code":"engineering","name":"E — Enginyeria","color":"#F59E0B","skills":["Comprensió de mecanismes","Ergonomia del disseny","Estabilitat estructural","Mecànica simple","Motricitat fina","Optimització de recursos","Prototipatge Ràpid","Seguretat en el Disseny","Sincronització mecànica","Transmissió de moviment"]},{"code":"art","name":"A — Art","color":"#EC4899","skills":["Animació Frame-to-Frame","Composició Espacial","Disseny de Personatges","Disseny estètic","Escenografia i Il·luminació","Personalització","Storytelling","Teoria del Color Aplicada"]},{"code":"mathematics","name":"M — Matemàtiques","color":"#10B981","skills":["Abstracció","Algorimització","Angles i girs","Descomposició","Escalat i proporció","Estimació de distàncies i temps","Geometria de sòlids","Iteració","Lògica condicional","Operadors lògics","Orientació en coordenades","Orientació espacial bàsica","Probabilitat i Atzar","Reconeixement de patrons","Seqüenciació","Simetria","Visió espacial"]},{"code":"transversal","name":"Competències Transversals","color":"#6B7280","skills":["Atenció als detalls","Col·laboració","Descripció de processos","Flexibilitat Mental","Gestió del temps","Interacció oral funcional","Lectura de simbologia i text","Lideratge distribuït","Pensament crític","Planificació estratègica","Presa de decisions","Repartiment de tasques","Resiliència","Vocabulari tècnic específic"]}];
+const branchWrap = document.getElementById('branchGrid');
+function renderBranches(){
+  const openStates = Array.from(branchWrap.querySelectorAll('.branch-acc')).map(a=>a.classList.contains('open'));
+  branchWrap.innerHTML = '';
+  BRANCHES.forEach((b, i)=>{
+    const acc = document.createElement('div');
+    acc.className = 'branch-acc' + (openStates[i] ? ' open' : '');
+    acc.style.setProperty('--b-color', b.color);
+    acc.innerHTML = `
+      <button class="branch-head">
+        <div class="left"><span class="swatch"></span><h4>${branchLabel(b.name)}</h4></div>
+        <div class="right"><span class="count">${b.skills.length}</span><span class="chev">▾</span></div>
+      </button>
+      <div class="branch-body">
+        <div class="branch-scroll">
+          <div class="branch-skill-list">
+            ${b.skills.map(s=>`<div class="branch-skill-row"><span class="b-dot"></span>${skillLabel(s)}</div>`).join('')}
+          </div>
+        </div>
+      </div>`;
+    acc.querySelector('.branch-head').addEventListener('click', ()=>{
+      acc.classList.toggle('open');
+    });
+    branchWrap.appendChild(acc);
+  });
+}
+renderBranches();
+
+/* ---------- Slide 4: taula real rúbrica (1-5) × nivell de projecte -> rang 1-50 ---------- */
+const NIV_COLS = ['Niv.1','Niv.1-2','Niv.2','Niv.2-3','Niv.3','Niv.3-4','Niv.4','Niv.4-5','Niv.5'];
+const rankTable = [
+  [1,'1–10',  [1,2,3,4,5,6,7,null,9,10]],
+  [2,'11–20', [11,12,13,14,15,16,17,null,19,20]],
+  [3,'21–30', [21,22,23,24,25,26,27,null,29,30]],
+  [4,'31–40', [31,32,33,34,35,36,37,null,39,40]],
+  [5,'41–50', [41,42,43,44,45,46,47,null,49,50]],
+];
+const rankHead = document.getElementById('rankTableHead');
+const rankBody = document.getElementById('rankTableBody');
+function renderRankTable(){
+  rankHead.innerHTML = `<th>${I18N[currentLang].rubricaLabel}</th>` + NIV_COLS.map(n=>`<th>${n}</th>`).join('');
+  rankBody.innerHTML = '';
+  rankTable.forEach(([rubrica,bloc,vals])=>{
+    const cells = vals.filter((_,i)=>i!==7);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="bloclabel">${I18N[currentLang].rubricaLabel} ${rubrica}<span class="rng">(${bloc})</span></td>` +
+      cells.map(v=>`<td>${v}</td>`).join('');
+    rankBody.appendChild(tr);
+  });
+}
+renderRankTable();
+
+/* ---------- Slide 6: thresholds table — 30 nivells, dades reals ---------- */
+const thresholds = [
+  [1,0,0,0],[2,80,240,1040],[3,240,720,3120],[4,480,1440,6240],[5,800,2400,10400],
+  [6,1200,3600,15600],[7,1680,5040,21840],[8,2240,6720,29120],[9,2880,8640,37440],[10,3600,10800,46800],
+  [11,4400,13200,57200],[12,5280,15840,68640],[13,6240,18720,81120],[14,7280,21840,94640],[15,8400,25200,109200],
+  [16,9600,28800,124800],[17,10880,32640,141440],[18,12240,36720,159120],[19,13680,41040,177840],[20,15200,45600,197600],
+  [21,16800,50400,218400],[22,18480,55440,240240],[23,20240,60720,263120],[24,22080,66240,287040],[25,24000,72000,312000],
+  [26,26000,78000,338000],[27,28080,84240,365040],[28,30240,90720,393120],[29,32480,97440,422240],[30,34800,104400,452400],
+];
+const thBody = document.getElementById('thBody');
+function renderThresholds(){
+  thBody.innerHTML = '';
+  const locale = currentLang==='es' ? 'es-ES' : 'ca-ES';
+  thresholds.forEach(([lvl,sk,br,gl])=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td class="lvl">${I18N[currentLang].nivellRow} ${lvl}</td><td class="num">${sk.toLocaleString(locale)}</td><td class="num">${br.toLocaleString(locale)}</td><td class="num">${gl.toLocaleString(locale)}</td>`;
+    thBody.appendChild(tr);
+  });
+}
+renderThresholds();
+
+/* ---------- applyI18n: tradueix tot el text estàtic de la presentació ---------- */
+function applyI18n(){
+  const t = I18N[currentLang];
+  setText('txtKicker', t.kicker);
+  setHTML('txtCoverTitle', t.coverTitle);
+  setText('txtCoverSub', t.coverSub);
+  setHTML('txtCoverCol1', t.coverCol1);
+  setText('txtAmbitLabel', t.ambitLabel);
+  setText('txtAmbit', t.ambit);
+  setText('txtDataLabel', t.dataLabel);
+  setText('txtData', t.data);
+
+  setText('txtIndexEyebrow', t.indexEyebrow);
+  setText('txtIndexTitle', t.indexTitle);
+  setText('txtIndexSub', t.indexSub);
+
+  setText('txtS1Eyebrow', t.s1Eyebrow);
+  setText('txtS1Title', t.s1Title);
+  setText('txtS1Sub', t.s1Sub);
+  setText('txtAbansPill', t.abansPill);
+  setText('txtAbansH3', t.abansH3);
+  setText('txtDespresPill', t.despresPill);
+  setText('txtDespresH3', t.despresH3);
+  t.before.forEach((v,i)=>setText('txtBefore'+i, v));
+  t.after.forEach((v,i)=>setHTML('txtAfter'+i, v));
+
+  setText('txtS2Eyebrow', t.s2Eyebrow);
+  setText('txtS2Title', t.s2Title);
+  setText('txtS2Sub', t.s2Sub);
+  setHTML('txtMapFrame', t.mapFrame);
+  setText('txtLegendOut', t.legendOut);
+  setText('txtLegendIn', t.legendIn);
+  setText('txtOpenDemo', t.openDemo);
+  setText('txtLiveDemo', t.liveDemo);
+  setText('txtDetailEmpty', t.detailEmpty);
+
+  setText('txtS3Eyebrow', t.s3Eyebrow);
+  setText('txtS3Title', t.s3Title);
+  setText('txtS3Sub', t.s3Sub);
+  setText('txtQr3Label', t.qr3Label);
+  setText('txtQr3Note', t.qr3Note);
+
+  setText('txtS4Eyebrow', t.s4Eyebrow);
+  setText('txtS4Title', t.s4Title);
+  setText('txtS4Sub', t.s4Sub);
+  setText('txtPas1Tag', t.pas1Tag);
+  setText('txtPas1H', t.pas1H);
+  setHTML('txtPas1P', t.pas1P);
+  setText('txtPas2Tag', t.pas2Tag);
+  setText('txtPas2H', t.pas2H);
+  setText('txtPas2P', t.pas2P);
+  setText('txtRtHead', t.rtHead);
+  setText('txtRtSub', t.rtSub);
+
+  setText('txtS5Eyebrow', t.s5Eyebrow);
+  setText('txtS5Title', t.s5Title);
+  setText('txtS5Sub', t.s5Sub);
+  setText('txtEqLbl1', t.eqLbl1);
+  setText('txtEqLbl2', t.eqLbl2);
+  setText('txtEqRangLabel', t.eqRang);
+  setText('txtEqLbl3', t.eqLbl3);
+  setText('txtEx1', t.ex1);
+  setText('txtEx2', t.ex2);
+  setText('txtEx3', t.ex3);
+
+  setText('txtS6Eyebrow', t.s6Eyebrow);
+  setText('txtS6Title', t.s6Title);
+  setText('txtS6Sub', t.s6Sub);
+  setText('txtThLvl', t.thLvl);
+  setText('txtThSkill', t.thSkill);
+  setText('txtThBranch', t.thBranch);
+  setText('txtThGlobal', t.thGlobal);
+  setText('txtScTag1', t.scTag1); setText('txtScH1', t.scH1); setText('txtScP1', t.scP1);
+  setText('txtScTag2', t.scTag2); setText('txtScH2', t.scH2); setText('txtScP2', t.scP2);
+  setText('txtScTag3', t.scTag3); setText('txtScH3', t.scH3); setText('txtScP3', t.scP3);
+  setText('txtVeurePerfil', t.veurePerfil);
+
+  setText('txtS7Eyebrow', t.s7Eyebrow);
+  setText('txtS7Title', t.s7Title);
+  setText('txtS7Sub', t.s7Sub);
+  setText('txtPs1H', t.ps1H); setText('txtPs1P', t.ps1P);
+  setText('txtPs2H', t.ps2H); setHTML('txtPs2P', t.ps2P);
+  setText('txtPs3H', t.ps3H); setText('txtPs3P', t.ps3P);
+  setText('txtPs4H', t.ps4H); setText('txtPs4P', t.ps4P);
+  setText('txtQr7Label', t.qr7Label);
+  setText('txtQr7Note', t.qr7Note);
+
+  setText('txtS8Eyebrow', t.s8Eyebrow);
+  setText('txtS8Title', t.s8Title);
+  setText('txtS8Sub', t.s8Sub);
+  setText('txtF1H', t.f1H); setText('txtF1P', t.f1P);
+  setText('txtF2H', t.f2H); setText('txtF2P', t.f2P);
+  setText('txtF3H', t.f3H); setText('txtF3P', t.f3P);
+  setText('txtF4H', t.f4H); setText('txtF4P', t.f4P);
+  setHTML('txtCallout', t.callout);
+}
+applyI18n();
+
+/* ---------- Selector d'idioma ---------- */
+document.querySelectorAll('.lang-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    if(btn.dataset.lang === currentLang) return;
+    currentLang = btn.dataset.lang;
+    document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active', b===btn));
+    applyI18n();
+    renderIndex();
+    renderBranches();
+    renderRankTable();
+    renderThresholds();
+    if(window.mmRefreshLang) window.mmRefreshLang();
+  });
+});
+
+
+/* ---------- Slide 2: widget del mapa Màquines Motoritzades (autònom) ---------- */
+(function(){
+  const MM = {"initial":"87679a3a-60aa-46c8-aa37-da629f57fd0d","nodes":[{"id":"87679a3a-60aa-46c8-aa37-da629f57fd0d","name":"Sweeper","slot":"2","slot_value":2.0,"hours":3.0,"desc":"Un cap giratori mogut per engranatges converteix un simple cotxe en un petit escombrador. Mentre el vehicle avança, el cap gira i \"neteja\" una superfície simulada, i l'alumnat descobreix com un sol motor pot moure diverses peces alhora. Prova diferents combinacions d'engranatges per fer que el sistema sigui més eficaç i compara dues maneres de transmetre moviment, reflexionant sobre quina és més segura. Una manera molt pràctica d'entendre les màquines que ens ajuden a casa.","skills":[{"n":"Aprenentatge per Prova i Error","r":13},{"n":"Comprensió de mecanismes","r":13},{"n":"Transmissió de moviment","r":13},{"n":"Prototipatge Ràpid","r":13},{"n":"Optimització de recursos","r":13},{"n":"Escalat i proporció","r":13},{"n":"Relació Causa-Efecte","r":3},{"n":"Física del fregament","r":3},{"n":"Formulació d'Hipòtesis","r":3},{"n":"Recollida i Representació de Dades","r":3},{"n":"Mecànica simple","r":3},{"n":"Seguretat en el Disseny","r":3},{"n":"Disseny estètic","r":3},{"n":"Reconeixement de patrons","r":3},{"n":"Estimació de distàncies i temps","r":3},{"n":"Seqüenciació","r":3},{"n":"Visió espacial","r":3},{"n":"Col·laboració","r":3},{"n":"Repartiment de tasques","r":3},{"n":"Interacció oral funcional","r":3},{"n":"Vocabulari tècnic específic","r":3},{"n":"Resiliència","r":3},{"n":"Pensament crític","r":3},{"n":"Atenció als detalls","r":3},{"n":"Flexibilitat Mental","r":3},{"n":"Presa de decisions","r":3},{"n":"Planificació estratègica","r":3}],"thematic":false,"desc_es":"Un cabezal giratorio movido por engranajes convierte un simple coche en una pequeña barredora. Mientras el vehículo avanza, el cabezal gira y \"limpia\" una superficie simulada, y el alumnado descubre cómo un solo motor puede mover varias piezas a la vez. Prueba distintas combinaciones de engranajes para hacer el sistema más eficaz y compara dos formas de transmitir movimiento, reflexionando sobre cuál es más segura. Una manera muy práctica de entender las máquinas que nos ayudan en casa."},{"id":"c6630b59-a8f2-4e06-b1cb-aedf9cf17f2c","name":"Fishin Rod","slot":"2-3","slot_value":2.5,"hours":4.0,"desc":"Amb un molinet i un sistema de politges, una simple canya de fusta es converteix en una màquina capaç d'hissar un \"peix\" ben pesat sense gaire esforç. L'alumnat compara tres muntatges diferents fins descobrir que, amb una politja ben col·locada, es pot aixecar més pes movent menys força. L'activitat acaba amb un joc de pesca amb puntuació que converteix tot el que s'ha après en un repte ben divertit. Una manera molt visual d'entendre l'estalvi d'esforç.","skills":[{"n":"Relació Causa-Efecte","r":24},{"n":"Formulació d'Hipòtesis","r":24},{"n":"Aprenentatge per Prova i Error","r":24},{"n":"Mecànica simple","r":24},{"n":"Comprensió de mecanismes","r":24},{"n":"Optimització de recursos","r":24},{"n":"Escalat i proporció","r":24},{"n":"Física de la gravetat","r":14},{"n":"Prototipatge Ràpid","r":14},{"n":"Motricitat fina","r":14},{"n":"Disseny de Personatges","r":14},{"n":"Estimació de distàncies i temps","r":14},{"n":"Probabilitat i Atzar","r":14},{"n":"Visió espacial","r":14},{"n":"Resiliència","r":14},{"n":"Pensament crític","r":14},{"n":"Presa de decisions","r":14},{"n":"Planificació estratègica","r":14},{"n":"Seqüenciació","r":4},{"n":"Col·laboració","r":4},{"n":"Repartiment de tasques","r":4},{"n":"Interacció oral funcional","r":4},{"n":"Vocabulari tècnic específic","r":4},{"n":"Flexibilitat Mental","r":4}],"thematic":false,"desc_es":"Con un carrete y un sistema de poleas, una simple caña de madera se convierte en una máquina capaz de izar un \"pez\" bastante pesado sin apenas esfuerzo. El alumnado compara tres montajes distintos hasta descubrir que, con una polea bien colocada, se puede levantar más peso haciendo menos fuerza. La actividad termina con un juego de pesca con puntuación que convierte todo lo aprendido en un reto muy divertido. Una manera muy visual de entender el ahorro de esfuerzo."},{"id":"82584a32-94b6-4108-8010-6e50581fd93f","name":"Hammer","slot":"3","slot_value":3.0,"hours":3.0,"desc":"Una peça giratòria anomenada lleva és el secret d'aquesta petita màquina de picar automàtica, que transforma el gir d'una maneta en el moviment de pujar i baixar d'un martell. A partir d'aquest model, l'alumnat mesura i compara com quatre tipus d'engranatges diferents afecten la força i la velocitat del cop, convertint la maquineta en un petit instrument científic. És un projecte molt visual sobre com un moviment circular es pot transformar en un moviment de vaivé.","skills":[{"n":"Recollida i Representació de Dades","r":35},{"n":"Comprensió de mecanismes","r":35},{"n":"Sincronització mecànica","r":35},{"n":"Formulació d'Hipòtesis","r":25},{"n":"Relació Causa-Efecte","r":25},{"n":"Seguretat en el Disseny","r":25},{"n":"Angles i girs","r":25},{"n":"Reconeixement de patrons","r":25},{"n":"Mecànica simple","r":15},{"n":"Seqüenciació","r":15},{"n":"Visió espacial","r":15},{"n":"Pensament crític","r":15},{"n":"Atenció als detalls","r":15},{"n":"Planificació estratègica","r":15},{"n":"Disseny estètic","r":15},{"n":"Col·laboració","r":5},{"n":"Repartiment de tasques","r":5},{"n":"Interacció oral funcional","r":5},{"n":"Vocabulari tècnic específic","r":5}],"thematic":false,"desc_es":"Una pieza giratoria llamada leva es el secreto de esta pequeña máquina de picar automática, que transforma el giro de una manivela en el movimiento de subir y bajar de un martillo. A partir de este modelo, el alumnado mide y compara cómo cuatro tipos de engranajes distintos afectan a la fuerza y la velocidad del golpe, convirtiendo la maquinita en un pequeño instrumento científico. Es un proyecto muy visual sobre cómo un movimiento circular se puede transformar en un movimiento de vaivén."},{"id":"bd9af211-0f57-45f2-b55b-e1e5a4cf34b4","name":"Land Yacht","slot":"2","slot_value":2.0,"hours":3.0,"desc":"Sense motor elèctric i amb només una vela pròpia, un petit vehicle es mou gràcies a la força del vent. L'activitat és una bona excusa per parlar de les energies renovables i de com podem aprofitar-les. L'alumnat prova el seu vaixell de terra en diferents condicions, ajusta la vela i observa com canvia el moviment segons la força de l'aire. Una manera senzilla i divertida d'introduir el concepte d'energia eòlica.","skills":[{"n":"Formulació d'Hipòtesis","r":23},{"n":"Aprenentatge per Prova i Error","r":23},{"n":"Física del fregament","r":23},{"n":"Relació Causa-Efecte","r":23},{"n":"Comprensió de mecanismes","r":23},{"n":"Estimació de distàncies i temps","r":23},{"n":"Mecànica simple","r":13},{"n":"Motricitat fina","r":13},{"n":"Estabilitat estructural","r":13},{"n":"Disseny estètic","r":13},{"n":"Escalat i proporció","r":13},{"n":"Visió espacial","r":13},{"n":"Resiliència","r":13},{"n":"Pensament crític","r":13},{"n":"Planificació estratègica","r":13},{"n":"Seqüenciació","r":3},{"n":"Col·laboració","r":3},{"n":"Repartiment de tasques","r":3},{"n":"Interacció oral funcional","r":3},{"n":"Vocabulari tècnic específic","r":3}],"thematic":false,"desc_es":"Sin motor eléctrico y con solo una vela propia, un pequeño vehículo se mueve gracias a la fuerza del viento. La actividad es una buena excusa para hablar de las energías renovables y de cómo podemos aprovecharlas. El alumnado prueba su velero de tierra en distintas condiciones, ajusta la vela y observa cómo cambia el movimiento según la fuerza del aire. Una manera sencilla y divertida de introducir el concepto de energía eólica."},{"id":"710f0d39-ac4b-47a9-af74-86c9b8db78ac","name":"Power Car","slot":"2-3","slot_value":2.5,"hours":3.0,"desc":"Com un petit equip d'enginyers, l'alumnat construeix un cotxe motoritzat per investigar la relació entre velocitat, força i fricció. Primer cronometra quant triga a recórrer una distància fixa; després canvia la configuració dels engranatges per veure quin muntatge puja millor una rampa. Finalment, prova la força de tracció fent que el cotxe arrossegui un pes, ajustant contrapesos per millorar l'agafament de les rodes. Un projecte molt complet per entendre com funcionen els vehicles.","skills":[{"n":"Formulació d'Hipòtesis","r":24},{"n":"Aprenentatge per Prova i Error","r":24},{"n":"Comprensió de mecanismes","r":24},{"n":"Estimació de distàncies i temps","r":24},{"n":"Escalat i proporció","r":24},{"n":"Física de la gravetat","r":14},{"n":"Física del fregament","r":14},{"n":"Relació Causa-Efecte","r":14},{"n":"Manteniment Tecnològic","r":14},{"n":"Depuració","r":14},{"n":"Mecànica simple","r":14},{"n":"Motricitat fina","r":14},{"n":"Estabilitat estructural","r":14},{"n":"Prototipatge Ràpid","r":14},{"n":"Disseny estètic","r":14},{"n":"Angles i girs","r":14},{"n":"Visió espacial","r":14},{"n":"Resiliència","r":14},{"n":"Pensament crític","r":14},{"n":"Planificació estratègica","r":14},{"n":"Maquinari i connectivitat","r":4},{"n":"Seqüenciació","r":4},{"n":"Col·laboració","r":4},{"n":"Repartiment de tasques","r":4},{"n":"Interacció oral funcional","r":4},{"n":"Vocabulari tècnic específic","r":4},{"n":"Atenció als detalls","r":4},{"n":"Flexibilitat Mental","r":4}],"thematic":false,"desc_es":"Como un pequeño equipo de ingenieros, el alumnado construye un coche motorizado para investigar la relación entre velocidad, fuerza y fricción. Primero cronometra cuánto tarda en recorrer una distancia fija; después cambia la configuración de los engranajes para ver qué montaje sube mejor una rampa. Finalmente, prueba la fuerza de tracción haciendo que el coche arrastre un peso, ajustando contrapesos para mejorar el agarre de las ruedas. Un proyecto muy completo para entender cómo funcionan los vehículos."},{"id":"7849b327-a550-4e9f-8582-cabb140e0e58","name":"The Walker","slot":"4","slot_value":4.0,"hours":5.0,"desc":"Amb potes llargues que imiten el moviment d'un insecte, aquest robot està pensat per transportar petites càrregues sense rodes. L'alumnat prova tres tipus diferents de potes i mecanismes de transmissió per descobrir quina configuració és més ràpida en terra pla i quina és més estable en una rampa. L'activitat combina una construcció mecànica exigent amb un mètode d'investigació real: provar, mesurar i comparar resultats. Un dels projectes més avançats del bloc.","skills":[{"n":"Comprensió de mecanismes","r":47},{"n":"Formulació d'Hipòtesis","r":37},{"n":"Aprenentatge per Prova i Error","r":37},{"n":"Mecànica simple","r":37},{"n":"Estabilitat estructural","r":37},{"n":"Física de la gravetat","r":27},{"n":"Relació Causa-Efecte","r":27},{"n":"Depuració","r":27},{"n":"Motricitat fina","r":27},{"n":"Prototipatge Ràpid","r":27},{"n":"Estimació de distàncies i temps","r":27},{"n":"Angles i girs","r":27},{"n":"Visió espacial","r":27},{"n":"Manteniment Tecnològic","r":17},{"n":"Seqüenciació","r":17},{"n":"Col·laboració","r":17},{"n":"Resiliència","r":17},{"n":"Atenció als detalls","r":17},{"n":"Pensament crític","r":17},{"n":"Flexibilitat Mental","r":17},{"n":"Planificació estratègica","r":17},{"n":"Disseny estètic","r":17},{"n":"Maquinari i connectivitat","r":7},{"n":"Repartiment de tasques","r":7},{"n":"Interacció oral funcional","r":7},{"n":"Vocabulari tècnic específic","r":7},{"n":"Gestió del temps","r":7}],"thematic":false,"desc_es":"Con patas largas que imitan el movimiento de un insecto, este robot está pensado para transportar pequeñas cargas sin ruedas. El alumnado prueba tres tipos distintos de patas y mecanismos de transmisión para descubrir qué configuración es más rápida en terreno llano y cuál es más estable en una rampa. La actividad combina una construcción mecánica exigente con un método de investigación real: probar, medir y comparar resultados. Uno de los proyectos más avanzados del bloque."},{"id":"efd14dd7-0fc2-4d0f-8057-ddf09f138b0e","name":"Moving materials","slot":"3-4","slot_value":3.5,"hours":5.0,"desc":"Aixecar i transportar objectes sense que es bolquin: aquest és el repte d'un petit carretó elevador motoritzat que l'alumnat dissenya i construeix. Durant l'activitat experimenta com fer-lo \"més fort\" i més estable perquè la càrrega no caigui. El repte final és un joc logístic on cal recollir el màxim d'objectes possible, posant a prova la destresa conduint i el sentit de la seguretat en el disseny. Una bona manera d'entendre la maquinària de càrrega que veiem en magatzems i obres.","skills":[{"n":"Física de la gravetat","r":36},{"n":"Estabilitat estructural","r":36},{"n":"Formulació d'Hipòtesis","r":26},{"n":"Aprenentatge per Prova i Error","r":26},{"n":"Mecànica simple","r":26},{"n":"Comprensió de mecanismes","r":26},{"n":"Prototipatge Ràpid","r":26},{"n":"Estimació de distàncies i temps","r":26},{"n":"Visió espacial","r":26},{"n":"Escalat i proporció","r":26},{"n":"Relació Causa-Efecte","r":16},{"n":"Manteniment Tecnològic","r":16},{"n":"Depuració","r":16},{"n":"Motricitat fina","r":16},{"n":"Ergonomia del disseny","r":16},{"n":"Disseny estètic","r":16},{"n":"Seqüenciació","r":16},{"n":"Col·laboració","r":16},{"n":"Resiliència","r":16},{"n":"Pensament crític","r":16},{"n":"Flexibilitat Mental","r":16},{"n":"Planificació estratègica","r":16},{"n":"Maquinari i connectivitat","r":6},{"n":"Repartiment de tasques","r":6},{"n":"Interacció oral funcional","r":6},{"n":"Vocabulari tècnic específic","r":6},{"n":"Atenció als detalls","r":6},{"n":"Gestió del temps","r":6}],"thematic":false,"desc_es":"Levantar y transportar objetos sin que se vuelquen: este es el reto de una pequeña carretilla elevadora motorizada que el alumnado diseña y construye. Durante la actividad experimenta cómo hacerla \"más fuerte\" y más estable para que la carga no se caiga. El reto final es un juego logístico donde hay que recoger el máximo de objetos posible, poniendo a prueba la destreza al conducir y el sentido de la seguridad en el diseño. Una buena manera de entender la maquinaria de carga que vemos en almacenes y obras."},{"id":"f601fad2-56ac-4f1b-9c28-0351dc1f7913","name":"Speed","slot":"3","slot_value":3.0,"hours":3.0,"desc":"Què fa que un vehicle vagi més ràpid o més lent? Per respondre-ho, l'alumnat construeix una moto motoritzada i compara el temps que triga amb rodes petites i amb rodes grans, fent fins i tot una predicció matemàtica de quant trigaria a fer el doble de recorregut. També canvia la configuració de politges i gomes per veure com afecta la velocitat, i comprova com es comporta el motor en pujada. Un petit laboratori de física del moviment fet amb peces de construcció.","skills":[{"n":"Aprenentatge per Prova i Error","r":25},{"n":"Física del fregament","r":25},{"n":"Relació Causa-Efecte","r":25},{"n":"Depuració","r":25},{"n":"Comprensió de mecanismes","r":25},{"n":"Estabilitat estructural","r":25},{"n":"Prototipatge Ràpid","r":25},{"n":"Estimació de distàncies i temps","r":25},{"n":"Escalat i proporció","r":25},{"n":"Formulació d'Hipòtesis","r":15},{"n":"Manteniment Tecnològic","r":15},{"n":"Mecànica simple","r":15},{"n":"Motricitat fina","r":15},{"n":"Disseny estètic","r":15},{"n":"Visió espacial","r":15},{"n":"Resiliència","r":15},{"n":"Atenció als detalls","r":15},{"n":"Flexibilitat Mental","r":15},{"n":"Planificació estratègica","r":15},{"n":"Maquinari i connectivitat","r":5},{"n":"Seqüenciació","r":5},{"n":"Col·laboració","r":5},{"n":"Repartiment de tasques","r":5},{"n":"Interacció oral funcional","r":5},{"n":"Vocabulari tècnic específic","r":5},{"n":"Pensament crític","r":5}],"thematic":false,"desc_es":"¿Qué hace que un vehículo vaya más rápido o más lento? Para responderlo, el alumnado construye una moto motorizada y compara el tiempo que tarda con ruedas pequeñas y con ruedas grandes, haciendo incluso una predicción matemática de cuánto tardaría en hacer el doble de recorrido. También cambia la configuración de poleas y gomas para ver cómo afecta a la velocidad, y comprueba cómo se comporta el motor en subida. Un pequeño laboratorio de física del movimiento hecho con piezas de construcción."},{"id":"a8632952-8c5c-4448-98c8-ccf0585d8751","name":"The Crane","slot":"4","slot_value":4.0,"hours":5.0,"desc":"Sense cap instrucció pas a pas, només mirant una imatge de referència: així és com l'alumnat s'enfronta al repte de construir una grua motoritzada. La grua utilitza politges i un sistema de politja doble per aixecar pesos amb menys esforç, i l'alumnat aprèn com es transmet la força cap amunt i per què les grues reals fan servir aquest tipus de mecanismes. Una activitat excel·lent per treballar l'observació, la deducció i la persistència davant d'un repte obert.","skills":[{"n":"Estabilitat estructural","r":47},{"n":"Prototipatge Ràpid","r":47},{"n":"Visió espacial","r":47},{"n":"Física de la gravetat","r":37},{"n":"Depuració","r":37},{"n":"Mecànica simple","r":37},{"n":"Comprensió de mecanismes","r":37},{"n":"Motricitat fina","r":37},{"n":"Composició Espacial","r":37},{"n":"Escalat i proporció","r":37},{"n":"Descomposició","r":37},{"n":"Formulació d'Hipòtesis","r":27},{"n":"Aprenentatge per Prova i Error","r":27},{"n":"Relació Causa-Efecte","r":27},{"n":"Manteniment Tecnològic","r":27},{"n":"Angles i girs","r":27},{"n":"Disseny estètic","r":17},{"n":"Col·laboració","r":17},{"n":"Resiliència","r":17},{"n":"Atenció als detalls","r":17},{"n":"Pensament crític","r":17},{"n":"Flexibilitat Mental","r":17},{"n":"Planificació estratègica","r":17},{"n":"Descripció de processos","r":17},{"n":"Maquinari i connectivitat","r":7},{"n":"Repartiment de tasques","r":7},{"n":"Interacció oral funcional","r":7},{"n":"Vocabulari tècnic específic","r":7},{"n":"Gestió del temps","r":7}],"thematic":false,"desc_es":"Sin ninguna instrucción paso a paso, solo mirando una imagen de referencia: así es como el alumnado se enfrenta al reto de construir una grúa motorizada. La grúa utiliza poleas y un sistema de polea doble para levantar pesos con menos esfuerzo, y el alumnado aprende cómo se transmite la fuerza hacia arriba y por qué las grúas reales usan este tipo de mecanismos. Una actividad excelente para trabajar la observación, la deducción y la persistencia ante un reto abierto."},{"id":"b200eb29-1d5a-4466-bb98-02c7132d0117","name":"Cable car","slot":"4-5","slot_value":4.5,"hours":5.0,"desc":"Un cable ben tensat, horitzontal o inclinat, és tot el que necessita aquest petit telefèric per desplaçar-se. El repte principal és aconseguir que el gir del motor es transformi en desplaçament gràcies a la fricció entre una politja i el cable, mantenint la cabina ben equilibrada perquè no perdi el contacte amb el fil. L'alumnat combina precisió mecànica i sentit de l'equilibri en un projecte molt semblant als telefèrics reals de muntanya.","skills":[{"n":"Aprenentatge per Prova i Error","r":49},{"n":"Física de la gravetat","r":49},{"n":"Física del fregament","r":49},{"n":"Estabilitat estructural","r":49},{"n":"Prototipatge Ràpid","r":49},{"n":"Visió espacial","r":49},{"n":"Formulació d'Hipòtesis","r":39},{"n":"Depuració","r":39},{"n":"Mecànica simple","r":39},{"n":"Comprensió de mecanismes","r":39},{"n":"Motricitat fina","r":39},{"n":"Composició Espacial","r":39},{"n":"Escalat i proporció","r":39},{"n":"Descomposició","r":39},{"n":"Relació Causa-Efecte","r":29},{"n":"Curiositat Investigadora","r":29},{"n":"Manteniment Tecnològic","r":29},{"n":"Disseny estètic","r":19},{"n":"Col·laboració","r":19},{"n":"Vocabulari tècnic específic","r":19},{"n":"Resiliència","r":19},{"n":"Atenció als detalls","r":19},{"n":"Pensament crític","r":19},{"n":"Flexibilitat Mental","r":19},{"n":"Planificació estratègica","r":19},{"n":"Descripció de processos","r":19},{"n":"Maquinari i connectivitat","r":9},{"n":"Repartiment de tasques","r":9},{"n":"Interacció oral funcional","r":9},{"n":"Gestió del temps","r":9}],"thematic":false,"desc_es":"Un cable bien tensado, horizontal o inclinado, es todo lo que necesita este pequeño teleférico para desplazarse. El reto principal es conseguir que el giro del motor se transforme en desplazamiento gracias a la fricción entre una polea y el cable, manteniendo la cabina bien equilibrada para que no pierda el contacto con el hilo. El alumnado combina precisión mecánica y sentido del equilibrio en un proyecto muy parecido a los teleféricos reales de montaña."},{"id":"af0cfebf-00f9-488d-b90b-a313d4421ecf","name":"The catapult","slot":"4-5","slot_value":4.5,"hours":4.0,"desc":"Sense motor i sense guia de muntatge, només amb gomes elàstiques: així és el repte de construir una catapulta capaç de llançar petits projectils amb la màxima distància i precisió possibles. L'alumnat ha d'observar, provar i corregir constantment el disseny fins aconseguir-ho. L'activitat acaba amb una competició de punteria i abast que també posa a prova la resistència de la construcció. Un projecte molt motivador que combina física, enginyeria i competició amistosa.","skills":[{"n":"Aprenentatge per Prova i Error","r":49},{"n":"Gestió de Variables","r":49},{"n":"Mecànica simple","r":49},{"n":"Estabilitat estructural","r":49},{"n":"Prototipatge Ràpid","r":49},{"n":"Visió espacial","r":49},{"n":"Angles i girs","r":49},{"n":"Formulació d'Hipòtesis","r":39},{"n":"Relació Causa-Efecte","r":39},{"n":"Comprensió de mecanismes","r":39},{"n":"Curiositat Investigadora","r":29},{"n":"Manteniment Tecnològic","r":29},{"n":"Motricitat fina","r":29},{"n":"Probabilitat i Atzar","r":29},{"n":"Disseny estètic","r":19},{"n":"Vocabulari tècnic específic","r":19},{"n":"Resiliència","r":19},{"n":"Pensament crític","r":19},{"n":"Flexibilitat Mental","r":19},{"n":"Planificació estratègica","r":19},{"n":"Maquinari i connectivitat","r":9},{"n":"Col·laboració","r":9},{"n":"Repartiment de tasques","r":9},{"n":"Interacció oral funcional","r":9}],"thematic":false,"desc_es":"Sin motor y sin guía de montaje, solo con gomas elásticas: así es el reto de construir una catapulta capaz de lanzar pequeños proyectiles con la máxima distancia y precisión posibles. El alumnado debe observar, probar y corregir constantemente el diseño hasta conseguirlo. La actividad termina con una competición de puntería y alcance que también pone a prueba la resistencia de la construcción. Un proyecto muy motivador que combina física, ingeniería y competición amistosa."},{"id":"c88fd627-4029-4b2f-93dd-321c0046004d","name":"Goalkeeper","slot":"3-4","slot_value":3.5,"hours":4.0,"desc":"Una goma elàstica connecta el motor a un engranatge i, de sobte, un porter comença a moure's d'una banda a l'altra de la porteria. L'alumnat experimenta canviant mides i posicions dels engranatges per fer que el moviment passi de lent a molt ràpid, entenent així com es pot augmentar o reduir la velocitat d'un mecanisme. Acaba provant el seu porter en un petit partit de futbolí, amb tota la família animant des de la banda.","skills":[{"n":"Comprensió de mecanismes","r":46},{"n":"Aprenentatge per Prova i Error","r":36},{"n":"Relació Causa-Efecte","r":36},{"n":"Mecànica simple","r":36},{"n":"Prototipatge Ràpid","r":36},{"n":"Angles i girs","r":36},{"n":"Probabilitat i Atzar","r":36},{"n":"Formulació d'Hipòtesis","r":26},{"n":"Curiositat Investigadora","r":26},{"n":"Manteniment Tecnològic","r":26},{"n":"Gestió de Variables","r":26},{"n":"Estabilitat estructural","r":26},{"n":"Visió espacial","r":26},{"n":"Disseny estètic","r":16},{"n":"Vocabulari tècnic específic","r":16},{"n":"Resiliència","r":16},{"n":"Pensament crític","r":16},{"n":"Flexibilitat Mental","r":16},{"n":"Planificació estratègica","r":16},{"n":"Maquinari i connectivitat","r":6},{"n":"Col·laboració","r":6},{"n":"Repartiment de tasques","r":6},{"n":"Interacció oral funcional","r":6}],"thematic":false,"desc_es":"Una goma elástica conecta el motor a un engranaje y, de repente, un portero empieza a moverse de un lado a otro de la portería. El alumnado experimenta cambiando tamaños y posiciones de los engranajes para hacer que el movimiento pase de lento a muy rápido, entendiendo así cómo se puede aumentar o reducir la velocidad de un mecanismo. Termina probando su portero en un pequeño partido de futbolín, con toda la familia animando desde la banda."},{"id":"5d54d629-eb32-4f76-84af-0062fbd1eb63","name":"Mini Golf","slot":"3-4","slot_value":3.5,"hours":4.0,"desc":"Un braç que oscil·la com un pal de golf de veritat: aquest és el mecanisme motoritzat que l'alumnat munta seguint una seqüència guiada de deu passos. Ha de sincronitzar el gir del motor perquè el cop tingui la força i l'angle necessaris per encertar el forat. És una activitat molt visual i divertida que combina construcció, precisió i moltes ganes de tornar-ho a intentar fins que surti bé.","skills":[{"n":"Aprenentatge per Prova i Error","r":36},{"n":"Disseny estètic","r":36},{"n":"Relació Causa-Efecte","r":26},{"n":"Curiositat Investigadora","r":26},{"n":"Física (moviment i energia)","r":26},{"n":"Gestió de Variables","r":26},{"n":"Mecànica simple","r":26},{"n":"Motricitat fina","r":26},{"n":"Estabilitat estructural","r":26},{"n":"Composició Espacial","r":26},{"n":"Angles i girs","r":26},{"n":"Probabilitat i Atzar","r":26},{"n":"Seqüenciació","r":16},{"n":"Vocabulari tècnic específic","r":16},{"n":"Resiliència","r":16},{"n":"Planificació estratègica","r":16},{"n":"Pensament crític","r":16},{"n":"Maquinari i connectivitat","r":6},{"n":"Col·laboració","r":6},{"n":"Repartiment de tasques","r":6},{"n":"Interacció oral funcional","r":6}],"thematic":false,"desc_es":"Un brazo que oscila como un palo de golf de verdad: este es el mecanismo motorizado que el alumnado monta siguiendo una secuencia guiada de diez pasos. Debe sincronizar el giro del motor para que el golpe tenga la fuerza y el ángulo necesarios para acertar el hoyo. Es una actividad muy visual y divertida que combina construcción, precisión y muchas ganas de volver a intentarlo hasta que salga bien."},{"id":"647f8a94-b06c-413f-add8-7ec5c030c65d","name":"Simple Car","slot":"2-3","slot_value":2.5,"hours":3.0,"desc":"Després de conèixer la història del primer cotxe amb motor de gasolina, l'alumnat munta un vehicle bàsic amb xassís i rodes. Però el veritable valor de l'activitat arriba quan se l'anima a \"provar coses diferents\": canviar les rodes, modificar els eixos i utilitzar gomes elàstiques per sincronitzar la tracció de les quatre rodes. Un projecte senzill que amaga un gran esperit inventiu i molta experimentació lliure.","skills":[{"n":"Aprenentatge per Prova i Error","r":34},{"n":"Estimació de distàncies i temps","r":34},{"n":"Formulació d'Hipòtesis","r":24},{"n":"Motricitat fina","r":24},{"n":"Prototipatge Ràpid","r":24},{"n":"Disseny estètic","r":24},{"n":"Visió espacial","r":24},{"n":"Maquinari i connectivitat","r":14},{"n":"Gestió de Variables","r":14},{"n":"Mecànica simple","r":14},{"n":"Estabilitat estructural","r":14},{"n":"Resiliència","r":14},{"n":"Pensament crític","r":14},{"n":"Flexibilitat Mental","r":14},{"n":"Col·laboració","r":4},{"n":"Repartiment de tasques","r":4},{"n":"Interacció oral funcional","r":4},{"n":"Vocabulari tècnic específic","r":4},{"n":"Planificació estratègica","r":4}],"thematic":false,"desc_es":"Tras conocer la historia del primer coche con motor de gasolina, el alumnado monta un vehículo básico con chasis y ruedas. Pero el verdadero valor de la actividad llega cuando se le anima a \"probar cosas distintas\": cambiar las ruedas, modificar los ejes y usar gomas elásticas para sincronizar la tracción de las cuatro ruedas. Un proyecto sencillo que esconde un gran espíritu inventivo y mucha experimentación libre."},{"id":"ee04c2a5-5512-47df-ba37-fc0ff65b2f06","name":"Motor Car","slot":"3-4","slot_value":3.5,"hours":3.0,"desc":"\"Jack\" és un transportista fictici que té massa feina i necessita ajuda per ser més eficient: aquest és el punt de partida per construir un vehicle de repartiment. L'alumnat munta primer un model bàsic amb motor i després entra en una fase d'optimització on prova diferents configuracions d'engranatges per recórrer una distància en el menor temps possible, recollint dades de cada prova. Un projecte que introdueix, de manera senzilla, el mètode científic aplicat a l'enginyeria.","skills":[{"n":"Formulació d'Hipòtesis","r":36},{"n":"Aprenentatge per Prova i Error","r":36},{"n":"Física (moviment i energia)","r":36},{"n":"Recollida i Representació de Dades","r":36},{"n":"Gestió de Variables","r":36},{"n":"Mecànica simple","r":36},{"n":"Comprensió de mecanismes","r":36},{"n":"Estimació de distàncies i temps","r":36},{"n":"Maquinari i connectivitat","r":26},{"n":"Estabilitat estructural","r":26},{"n":"Prototipatge Ràpid","r":26},{"n":"Disseny estètic","r":26},{"n":"Visió espacial","r":26},{"n":"Resiliència","r":16},{"n":"Pensament crític","r":16},{"n":"Atenció als detalls","r":16},{"n":"Flexibilitat Mental","r":16},{"n":"Planificació estratègica","r":16},{"n":"Col·laboració","r":6},{"n":"Repartiment de tasques","r":6},{"n":"Interacció oral funcional","r":6},{"n":"Vocabulari tècnic específic","r":6}],"thematic":false,"desc_es":"\"Jack\" es un transportista ficticio que tiene demasiado trabajo y necesita ayuda para ser más eficiente: este es el punto de partida para construir un vehículo de reparto. El alumnado monta primero un modelo básico con motor y después entra en una fase de optimización donde prueba distintas configuraciones de engranajes para recorrer una distancia en el menor tiempo posible, recogiendo datos de cada prueba. Un proyecto que introduce, de forma sencilla, el método científico aplicado a la ingeniería."},{"id":"215e76a3-abef-447d-9e22-75a404c87179","name":"Helicopter Car","slot":"3-4","slot_value":3.5,"hours":3.0,"desc":"Ales fixes o ales giratòries? Aquest vehicle serveix per comparar com vola un avió i com ho fa un helicòpter, fent girar una hèlix a partir del moviment de les seves rodes o d'un petit motor. El repte mecànic més important és transmetre el moviment girant-lo 90 graus, de l'eix horitzontal de les rodes a l'eix vertical de l'hèlix, i optimitzar-ne la velocitat amb els engranatges adequats. Un dels projectes més tècnics del bloc, ideal per a qui ja domina conceptes previs de mecànica.","skills":[{"n":"Relació Causa-Efecte","r":36},{"n":"Aprenentatge per Prova i Error","r":36},{"n":"Gestió de Variables","r":36},{"n":"Comprensió de mecanismes","r":36},{"n":"Prototipatge Ràpid","r":36},{"n":"Visió espacial","r":36},{"n":"Escalat i proporció","r":36},{"n":"Física (moviment i energia)","r":26},{"n":"Maquinari i connectivitat","r":26},{"n":"Mecànica simple","r":26},{"n":"Estabilitat estructural","r":26},{"n":"Sincronització mecànica","r":26},{"n":"Disseny estètic","r":26},{"n":"Resiliència","r":16},{"n":"Flexibilitat Mental","r":16},{"n":"Planificació estratègica","r":16},{"n":"Pensament crític","r":16},{"n":"Col·laboració","r":6},{"n":"Repartiment de tasques","r":6},{"n":"Interacció oral funcional","r":6},{"n":"Vocabulari tècnic específic","r":6}],"thematic":false,"desc_es":"¿Alas fijas o alas giratorias? Este vehículo sirve para comparar cómo vuela un avión y cómo lo hace un helicóptero, haciendo girar una hélice a partir del movimiento de sus ruedas o de un pequeño motor. El reto mecánico más importante es transmitir el movimiento girándolo 90 grados, del eje horizontal de las ruedas al eje vertical de la hélice, y optimizar su velocidad con los engranajes adecuados. Uno de los proyectos más técnicos del bloque, ideal para quien ya domina conceptos previos de mecánica."},{"id":"d8ce0b41-a2bf-4809-9bae-61837b924896","name":"The Float","slot":"3","slot_value":3.0,"hours":3.0,"desc":"Com més lenta, millor: aquesta és la particularitat d'una carrossa de desfilada pensada perquè el públic pugui apreciar-ne tots els detalls. Primer, seguint instruccions, l'alumnat construeix un sistema d'engranatges que redueix la velocitat del motor. Després té llibertat total per dissenyar i decorar l'estructura superior seguint una temàtica com Carnaval o Nadal. Un projecte que combina mecànica guiada amb una bona dosi de creativitat artística.","skills":[{"n":"Mecànica simple","r":35},{"n":"Disseny estètic","r":35},{"n":"Relació Causa-Efecte","r":25},{"n":"Curiositat Investigadora","r":25},{"n":"Comprensió de mecanismes","r":25},{"n":"Estabilitat estructural","r":25},{"n":"Prototipatge Ràpid","r":25},{"n":"Storytelling","r":25},{"n":"Escenografia i Il·luminació","r":25},{"n":"Visió espacial","r":25},{"n":"Escalat i proporció","r":25},{"n":"Aprenentatge per Prova i Error","r":15},{"n":"Manteniment Tecnològic","r":15},{"n":"Seguretat en el Disseny","r":15},{"n":"Vocabulari tècnic específic","r":15},{"n":"Flexibilitat Mental","r":15},{"n":"Planificació estratègica","r":15},{"n":"Maquinari i connectivitat","r":5},{"n":"Col·laboració","r":5},{"n":"Repartiment de tasques","r":5},{"n":"Interacció oral funcional","r":5},{"n":"Resiliència","r":5}],"thematic":true,"desc_es":"Cuanto más lenta, mejor: esta es la particularidad de una carroza de desfile pensada para que el público pueda apreciar todos sus detalles. Primero, siguiendo instrucciones, el alumnado construye un sistema de engranajes que reduce la velocidad del motor. Después tiene libertad total para diseñar y decorar la estructura superior siguiendo una temática como Carnaval o Navidad. Un proyecto que combina mecánica guiada con una buena dosis de creatividad artística."}],"edges":[{"from":"82584a32-94b6-4108-8010-6e50581fd93f","to":"7849b327-a550-4e9f-8582-cabb140e0e58","pct":100,"skip":true},{"from":"c88fd627-4029-4b2f-93dd-321c0046004d","to":"af0cfebf-00f9-488d-b90b-a313d4421ecf","pct":100,"skip":true},{"from":"5d54d629-eb32-4f76-84af-0062fbd1eb63","to":"af0cfebf-00f9-488d-b90b-a313d4421ecf","pct":100,"skip":true},{"from":"82584a32-94b6-4108-8010-6e50581fd93f","to":"f601fad2-56ac-4f1b-9c28-0351dc1f7913","pct":60,"skip":false},{"from":"82584a32-94b6-4108-8010-6e50581fd93f","to":"5d54d629-eb32-4f76-84af-0062fbd1eb63","pct":20,"skip":false},{"from":"82584a32-94b6-4108-8010-6e50581fd93f","to":"215e76a3-abef-447d-9e22-75a404c87179","pct":20,"skip":false},{"from":"7849b327-a550-4e9f-8582-cabb140e0e58","to":"a8632952-8c5c-4448-98c8-ccf0585d8751","pct":60,"skip":false},{"from":"7849b327-a550-4e9f-8582-cabb140e0e58","to":"af0cfebf-00f9-488d-b90b-a313d4421ecf","pct":20,"skip":false},{"from":"7849b327-a550-4e9f-8582-cabb140e0e58","to":"b200eb29-1d5a-4466-bb98-02c7132d0117","pct":20,"skip":false},{"from":"efd14dd7-0fc2-4d0f-8057-ddf09f138b0e","to":"5d54d629-eb32-4f76-84af-0062fbd1eb63","pct":26,"skip":false},{"from":"efd14dd7-0fc2-4d0f-8057-ddf09f138b0e","to":"215e76a3-abef-447d-9e22-75a404c87179","pct":26,"skip":false},{"from":"efd14dd7-0fc2-4d0f-8057-ddf09f138b0e","to":"ee04c2a5-5512-47df-ba37-fc0ff65b2f06","pct":28,"skip":false},{"from":"efd14dd7-0fc2-4d0f-8057-ddf09f138b0e","to":"7849b327-a550-4e9f-8582-cabb140e0e58","pct":20,"skip":false},{"from":"f601fad2-56ac-4f1b-9c28-0351dc1f7913","to":"82584a32-94b6-4108-8010-6e50581fd93f","pct":60,"skip":false},{"from":"f601fad2-56ac-4f1b-9c28-0351dc1f7913","to":"5d54d629-eb32-4f76-84af-0062fbd1eb63","pct":20,"skip":false},{"from":"f601fad2-56ac-4f1b-9c28-0351dc1f7913","to":"215e76a3-abef-447d-9e22-75a404c87179","pct":20,"skip":false},{"from":"a8632952-8c5c-4448-98c8-ccf0585d8751","to":"7849b327-a550-4e9f-8582-cabb140e0e58","pct":60,"skip":false},{"from":"a8632952-8c5c-4448-98c8-ccf0585d8751","to":"af0cfebf-00f9-488d-b90b-a313d4421ecf","pct":20,"skip":false},{"from":"a8632952-8c5c-4448-98c8-ccf0585d8751","to":"b200eb29-1d5a-4466-bb98-02c7132d0117","pct":20,"skip":false},{"from":"b200eb29-1d5a-4466-bb98-02c7132d0117","to":"af0cfebf-00f9-488d-b90b-a313d4421ecf","pct":100,"skip":false},{"from":"af0cfebf-00f9-488d-b90b-a313d4421ecf","to":"b200eb29-1d5a-4466-bb98-02c7132d0117","pct":100,"skip":false},{"from":"c88fd627-4029-4b2f-93dd-321c0046004d","to":"5d54d629-eb32-4f76-84af-0062fbd1eb63","pct":26,"skip":false},{"from":"c88fd627-4029-4b2f-93dd-321c0046004d","to":"215e76a3-abef-447d-9e22-75a404c87179","pct":26,"skip":false},{"from":"c88fd627-4029-4b2f-93dd-321c0046004d","to":"efd14dd7-0fc2-4d0f-8057-ddf09f138b0e","pct":28,"skip":false},{"from":"c88fd627-4029-4b2f-93dd-321c0046004d","to":"7849b327-a550-4e9f-8582-cabb140e0e58","pct":20,"skip":false},{"from":"5d54d629-eb32-4f76-84af-0062fbd1eb63","to":"215e76a3-abef-447d-9e22-75a404c87179","pct":26,"skip":false},{"from":"5d54d629-eb32-4f76-84af-0062fbd1eb63","to":"efd14dd7-0fc2-4d0f-8057-ddf09f138b0e","pct":26,"skip":false},{"from":"5d54d629-eb32-4f76-84af-0062fbd1eb63","to":"ee04c2a5-5512-47df-ba37-fc0ff65b2f06","pct":28,"skip":false},{"from":"5d54d629-eb32-4f76-84af-0062fbd1eb63","to":"7849b327-a550-4e9f-8582-cabb140e0e58","pct":20,"skip":false},{"from":"ee04c2a5-5512-47df-ba37-fc0ff65b2f06","to":"5d54d629-eb32-4f76-84af-0062fbd1eb63","pct":26,"skip":false},{"from":"ee04c2a5-5512-47df-ba37-fc0ff65b2f06","to":"215e76a3-abef-447d-9e22-75a404c87179","pct":26,"skip":false},{"from":"ee04c2a5-5512-47df-ba37-fc0ff65b2f06","to":"efd14dd7-0fc2-4d0f-8057-ddf09f138b0e","pct":28,"skip":false},{"from":"ee04c2a5-5512-47df-ba37-fc0ff65b2f06","to":"7849b327-a550-4e9f-8582-cabb140e0e58","pct":20,"skip":false},{"from":"215e76a3-abef-447d-9e22-75a404c87179","to":"5d54d629-eb32-4f76-84af-0062fbd1eb63","pct":26,"skip":false},{"from":"215e76a3-abef-447d-9e22-75a404c87179","to":"efd14dd7-0fc2-4d0f-8057-ddf09f138b0e","pct":26,"skip":false},{"from":"215e76a3-abef-447d-9e22-75a404c87179","to":"ee04c2a5-5512-47df-ba37-fc0ff65b2f06","pct":28,"skip":false},{"from":"215e76a3-abef-447d-9e22-75a404c87179","to":"7849b327-a550-4e9f-8582-cabb140e0e58","pct":20,"skip":false},{"from":"647f8a94-b06c-413f-add8-7ec5c030c65d","to":"ee04c2a5-5512-47df-ba37-fc0ff65b2f06","pct":100,"skip":true},{"from":"647f8a94-b06c-413f-add8-7ec5c030c65d","to":"c6630b59-a8f2-4e06-b1cb-aedf9cf17f2c","pct":40,"skip":false},{"from":"647f8a94-b06c-413f-add8-7ec5c030c65d","to":"710f0d39-ac4b-47a9-af74-86c9b8db78ac","pct":40,"skip":false},{"from":"647f8a94-b06c-413f-add8-7ec5c030c65d","to":"82584a32-94b6-4108-8010-6e50581fd93f","pct":20,"skip":false},{"from":"c6630b59-a8f2-4e06-b1cb-aedf9cf17f2c","to":"efd14dd7-0fc2-4d0f-8057-ddf09f138b0e","pct":100,"skip":true},{"from":"c6630b59-a8f2-4e06-b1cb-aedf9cf17f2c","to":"647f8a94-b06c-413f-add8-7ec5c030c65d","pct":40,"skip":false},{"from":"c6630b59-a8f2-4e06-b1cb-aedf9cf17f2c","to":"710f0d39-ac4b-47a9-af74-86c9b8db78ac","pct":40,"skip":false},{"from":"c6630b59-a8f2-4e06-b1cb-aedf9cf17f2c","to":"82584a32-94b6-4108-8010-6e50581fd93f","pct":20,"skip":false},{"from":"710f0d39-ac4b-47a9-af74-86c9b8db78ac","to":"efd14dd7-0fc2-4d0f-8057-ddf09f138b0e","pct":100,"skip":true},{"from":"710f0d39-ac4b-47a9-af74-86c9b8db78ac","to":"647f8a94-b06c-413f-add8-7ec5c030c65d","pct":40,"skip":false},{"from":"710f0d39-ac4b-47a9-af74-86c9b8db78ac","to":"c6630b59-a8f2-4e06-b1cb-aedf9cf17f2c","pct":40,"skip":false},{"from":"710f0d39-ac4b-47a9-af74-86c9b8db78ac","to":"82584a32-94b6-4108-8010-6e50581fd93f","pct":20,"skip":false},{"from":"bd9af211-0f57-45f2-b55b-e1e5a4cf34b4","to":"f601fad2-56ac-4f1b-9c28-0351dc1f7913","pct":100,"skip":true},{"from":"bd9af211-0f57-45f2-b55b-e1e5a4cf34b4","to":"87679a3a-60aa-46c8-aa37-da629f57fd0d","pct":60,"skip":false},{"from":"bd9af211-0f57-45f2-b55b-e1e5a4cf34b4","to":"647f8a94-b06c-413f-add8-7ec5c030c65d","pct":20,"skip":false},{"from":"bd9af211-0f57-45f2-b55b-e1e5a4cf34b4","to":"c6630b59-a8f2-4e06-b1cb-aedf9cf17f2c","pct":20,"skip":false},{"from":"87679a3a-60aa-46c8-aa37-da629f57fd0d","to":"f601fad2-56ac-4f1b-9c28-0351dc1f7913","pct":100,"skip":true},{"from":"87679a3a-60aa-46c8-aa37-da629f57fd0d","to":"bd9af211-0f57-45f2-b55b-e1e5a4cf34b4","pct":60,"skip":false},{"from":"87679a3a-60aa-46c8-aa37-da629f57fd0d","to":"647f8a94-b06c-413f-add8-7ec5c030c65d","pct":20,"skip":false},{"from":"87679a3a-60aa-46c8-aa37-da629f57fd0d","to":"c6630b59-a8f2-4e06-b1cb-aedf9cf17f2c","pct":20,"skip":false}]};
+  MM.edges = MM.edges.filter(e=>!e.skip); // només recomanem progressió, no ampliació
+  const NS = 'http://www.w3.org/2000/svg';
+  const byId = {};
+  MM.nodes.forEach(n => byId[n.id] = n);
+
+  const svg = document.getElementById('mmSvg');
+  const canvasArea = document.getElementById('mmCanvasArea');
+  const detailEl = document.getElementById('mmDetail');
+  const wrapEl = document.getElementById('mmMapWrap');
+  if(!svg) return; // slide not present
+
+  const COLW = 190, ROWH = 88, NODEW = 158, NODEH = 58;
+  let zoom = 1, panX = 24, panY = 24, selected = MM.initial;
+
+  function naturalCompare(a,b){ return a.localeCompare(b, 'ca'); }
+
+  function computeLayout(){
+    const slotsSet = Array.from(new Set(MM.nodes.map(n=>n.slot_value))).sort((a,b)=>a-b);
+    const slotIndex = {}; slotsSet.forEach((s,i)=>slotIndex[s]=i);
+    const minSlot = slotsSet[0], maxSlot = slotsSet[slotsSet.length-1];
+    const byIdx = {};
+    MM.nodes.forEach(n=>{ const idx=slotIndex[n.slot_value]; (byIdx[idx]=byIdx[idx]||[]).push(n); });
+    const maxCount = Math.max(...Object.values(byIdx).map(a=>a.length), 1);
+    const posOf = {};
+    Object.keys(byIdx).forEach(idx=>{
+      const arr = byIdx[idx].slice().sort((a,b)=>naturalCompare(a.name,b.name));
+      const totalH = arr.length*ROWH;
+      const containerH = maxCount*ROWH + 70;
+      const startY = 50 + (containerH-totalH)/2;
+      arr.forEach((n,i)=>{
+        posOf[n.id] = { x: 40+idx*COLW, y: startY+i*ROWH, w: NODEW, h: NODEH };
+      });
+    });
+    const width = 40 + slotsSet.length*COLW + NODEW + 40;
+    const height = 50 + maxCount*ROWH + 90;
+    return {posOf, width, height, slots:slotsSet, slotIndex, minSlot, maxSlot};
+  }
+
+  function edgePath(x1,y1,x2,y2){
+    const dx = Math.max(50, (x2-x1)*0.5);
+    return `M ${x1} ${y1} C ${x1+dx} ${y1}, ${x2-dx} ${y2}, ${x2} ${y2}`;
+  }
+  function roundedTop(x,y,w,h,r){
+    r = Math.min(r, w/2, h);
+    return `M${x},${y+h} V${y+r} A${r},${r} 0 0 1 ${x+r},${y} H${x+w-r} A${r},${r} 0 0 1 ${x+w},${y+r} V${y+h} Z`;
+  }
+
+  function slotLabelOf(v){ const n = MM.nodes.find(n=>n.slot_value===v); return n ? n.slot : String(v); }
+
+  function render(){
+    const layout = computeLayout();
+    const availW = canvasArea.clientWidth || 600, availH = canvasArea.clientHeight || 420;
+    svg.setAttribute('width', Math.max(layout.width*zoom, availW));
+    svg.setAttribute('height', Math.max(layout.height*zoom, availH));
+    svg.innerHTML = '';
+    const g = document.createElementNS(NS,'g');
+    g.setAttribute('transform', `translate(${panX},${panY}) scale(${zoom})`);
+    svg.appendChild(g);
+
+    // level columns
+    layout.slots.forEach((s,idx)=>{
+      const x = 40+idx*COLW;
+      const line = document.createElementNS(NS,'line');
+      line.setAttribute('x1', x-10); line.setAttribute('x2', x-10);
+      line.setAttribute('y1', 8); line.setAttribute('y2', layout.height);
+      line.setAttribute('stroke', 'rgba(93,122,140,.18)'); line.setAttribute('stroke-width','1');
+      g.appendChild(line);
+      const t = document.createElementNS(NS,'text');
+      t.setAttribute('x', x+NODEW/2); t.setAttribute('y', 28);
+      t.setAttribute('text-anchor','middle'); t.setAttribute('font-size','11');
+      t.setAttribute('font-family','IBM Plex Mono, monospace'); t.setAttribute('font-weight','600');
+      t.setAttribute('fill', '#5D7A8C');
+      t.textContent = 'NIVELL ' + slotLabelOf(s);
+      g.appendChild(t);
+    });
+
+    // edges
+    const edgeLayer = document.createElementNS(NS,'g');
+    g.appendChild(edgeLayer);
+    MM.edges.forEach(e=>{
+      const p1 = layout.posOf[e.from], p2 = layout.posOf[e.to];
+      if(!p1||!p2) return;
+      const isOut = selected && e.from===selected;
+      const isIn = selected && e.to===selected;
+      const isSel = isOut || isIn;
+      const x1 = p1.x+p1.w, y1 = p1.y+p1.h/2;
+      const x2 = p2.x, y2 = p2.y+p2.h/2;
+      const path = document.createElementNS(NS,'path');
+      path.setAttribute('d', edgePath(x1,y1,x2,y2));
+      const color = isIn ? '#B9821E' : '#3E5A6C'; // sortida = blau, entrada = groc
+      path.setAttribute('fill','none');
+      path.setAttribute('stroke', isSel ? color : '#CBD3D2');
+      path.setAttribute('stroke-width', isSel ? 3.4 : 1.3);
+      path.setAttribute('opacity', selected ? (isSel?1:0.2) : 0.55);
+      edgeLayer.appendChild(path);
+
+      if(isSel){
+        const mx=(x1+x2)/2, my=(y1+y2)/2;
+        const label = e.pct+'%';
+        const wpx = 20+label.length*9.5;
+        const bg = document.createElementNS(NS,'rect');
+        bg.setAttribute('x', mx-wpx/2); bg.setAttribute('y', my-13);
+        bg.setAttribute('width', wpx); bg.setAttribute('height', 26);
+        bg.setAttribute('rx', 13); bg.setAttribute('fill', color);
+        bg.setAttribute('stroke', '#fff'); bg.setAttribute('stroke-width','2');
+        edgeLayer.appendChild(bg);
+        const txt = document.createElementNS(NS,'text');
+        txt.setAttribute('x', mx); txt.setAttribute('y', my+5);
+        txt.setAttribute('text-anchor','middle'); txt.setAttribute('font-size','14');
+        txt.setAttribute('font-family','IBM Plex Mono, monospace'); txt.setAttribute('font-weight','700');
+        txt.setAttribute('fill', '#fff');
+        txt.textContent = label;
+        edgeLayer.appendChild(txt);
+      }
+    });
+
+    // nodes
+    const nodeLayer = document.createElementNS(NS,'g');
+    g.appendChild(nodeLayer);
+    MM.nodes.forEach(n=>{
+      const pos = layout.posOf[n.id];
+      if(!pos) return;
+      const isEntry = n.id === MM.initial;
+      const isFest = !!n.thematic;
+      const isSelected = selected === n.id;
+
+      const grp = document.createElementNS(NS,'g');
+      grp.style.cursor = 'pointer';
+
+      const shadow = document.createElementNS(NS,'rect');
+      shadow.setAttribute('x', pos.x); shadow.setAttribute('y', pos.y+3);
+      shadow.setAttribute('width', pos.w); shadow.setAttribute('height', pos.h);
+      shadow.setAttribute('rx', 13); shadow.setAttribute('fill','rgba(38,42,46,.10)');
+      grp.appendChild(shadow);
+
+      const rect = document.createElementNS(NS,'rect');
+      rect.setAttribute('x', pos.x); rect.setAttribute('y', pos.y);
+      rect.setAttribute('width', pos.w); rect.setAttribute('height', pos.h);
+      rect.setAttribute('rx', 13);
+      rect.setAttribute('fill', '#fff');
+      rect.setAttribute('stroke', isSelected ? '#E2A930' : (isEntry ? '#5D7A8C' : (isFest ? '#EC4899' : '#D9D2C0')));
+      rect.setAttribute('stroke-width', isSelected ? 2.6 : (isEntry || isFest ? 2 : 1.3));
+      if(isFest && !isSelected) rect.setAttribute('stroke-dasharray','4,3');
+      grp.appendChild(rect);
+
+      const bar = document.createElementNS(NS,'path');
+      bar.setAttribute('d', roundedTop(pos.x, pos.y, pos.w, 15, 13));
+      bar.setAttribute('fill', isEntry ? '#E2A930' : (isFest ? '#EC4899' : '#5D7A8C'));
+      grp.appendChild(bar);
+
+      if(isEntry){
+        const badge = document.createElementNS(NS,'text');
+        badge.setAttribute('x', pos.x+pos.w-10); badge.setAttribute('y', pos.y-6);
+        badge.setAttribute('text-anchor','end'); badge.setAttribute('font-size','9');
+        badge.setAttribute('font-family','IBM Plex Mono, monospace'); badge.setAttribute('font-weight','700');
+        badge.setAttribute('fill', '#B9821E');
+        badge.textContent = I18N[currentLang].mmBadgeInici;
+        grp.appendChild(badge);
+      }
+      if(isFest){
+        const badge = document.createElementNS(NS,'text');
+        badge.setAttribute('x', pos.x+10); badge.setAttribute('y', pos.y-6);
+        badge.setAttribute('text-anchor','start'); badge.setAttribute('font-size','9');
+        badge.setAttribute('font-family','IBM Plex Mono, monospace'); badge.setAttribute('font-weight','700');
+        badge.setAttribute('fill', '#EC4899');
+        badge.textContent = I18N[currentLang].mmBadgeFest;
+        grp.appendChild(badge);
+      }
+
+      const label = document.createElementNS(NS,'text');
+      label.setAttribute('x', pos.x+pos.w/2); label.setAttribute('y', pos.y+33);
+      label.setAttribute('text-anchor','middle'); label.setAttribute('font-size','12.5');
+      label.setAttribute('font-family','Inter, sans-serif'); label.setAttribute('font-weight','700');
+      label.setAttribute('fill', '#262A2E');
+      let nm = n.name; if(nm.length>22) nm = nm.slice(0,21)+'…';
+      label.textContent = nm;
+      grp.appendChild(label);
+
+      const sub = document.createElementNS(NS,'text');
+      sub.setAttribute('x', pos.x+pos.w/2); sub.setAttribute('y', pos.y+48);
+      sub.setAttribute('text-anchor','middle'); sub.setAttribute('font-size','10');
+      sub.setAttribute('font-family','IBM Plex Mono, monospace'); sub.setAttribute('fill','#666B62');
+      sub.textContent = (n.hours ? n.hours+'h · ' : '') + 'niv.' + n.slot;
+      grp.appendChild(sub);
+
+      grp.addEventListener('click', ()=>{ selected = (selected===n.id) ? null : n.id; render(); updateDetail(); });
+      nodeLayer.appendChild(grp);
+    });
+  }
+
+  function updateDetail(){
+    if(!selected){
+      detailEl.innerHTML = `<div class="mm-detail-empty">${I18N[currentLang].detailEmpty}</div>`;
+      return;
+    }
+    const n = byId[selected];
+    const isEntry = n.id === MM.initial;
+    const isFest = !!n.thematic;
+    const outEdges = MM.edges.filter(e=>e.from===selected).sort((a,b)=>b.pct-a.pct);
+    const badges = [
+      `<span class="d-badge${isEntry?' entry':''}">${isEntry?I18N[currentLang].mmInici:I18N[currentLang].mmNivell+' '+n.slot}</span>`,
+      n.hours ? `<span class="d-badge">${n.hours} h</span>` : '',
+      isFest ? `<span class="d-badge fest">${I18N[currentLang].mmFestivitat}</span>` : ''
+    ].join('');
+    const skillsSorted = (n.skills || []).slice().sort((a,b)=>b.r-a.r);
+    const skillsHtml = skillsSorted.map(s=>`<span class="d-skill">${skillLabel(s.n)}<span class="xp">+${s.r*4} XP</span></span>`).join('');
+    const edgesHtml = outEdges.length ? outEdges.map(e=>{
+      const target = byId[e.to];
+      return `<div class="d-edge-row">
+        <div class="d-edge-name"><span>${target ? target.name : '—'}</span>${target ? `<span class="d-edge-lvl">${I18N[currentLang].mmNivell} ${target.slot}</span>` : ''}</div>
+        <span class="d-edge-pct">${e.pct}%</span>
+      </div>`;
+    }).join('') : `<div class="mm-detail-empty" style="margin:0;">${I18N[currentLang].mmSenseConnexions}</div>`;
+
+    const desc = currentLang==='es' ? (n.desc_es || n.desc) : n.desc;
+    detailEl.innerHTML = `
+      <div class="d-title">${n.name}</div>
+      <div class="d-badges">${badges}</div>
+      <div class="d-desc">${desc}</div>
+      <div class="d-sub">${I18N[currentLang].mmHabilitatsTreb}<span class="d-sub-count">${skillsSorted.length}</span></div>
+      <div class="d-skills">${skillsHtml}</div>
+      <div class="d-sub">${I18N[currentLang].mmConnexionsSortida}</div>
+      <div class="d-edges">${edgesHtml}</div>
+    `;
+  }
+
+  function fitView(){
+    const layout = computeLayout();
+    const availW = canvasArea.clientWidth-16, availH = canvasArea.clientHeight-16;
+    const z = Math.min(availW/layout.width, availH/layout.height, 1.1);
+    zoom = Math.max(z, 0.3);
+    panX = 16; panY = 16;
+    render();
+  }
+
+  let dragging=false, lastX=0, lastY=0;
+  canvasArea.addEventListener('mousedown', (e)=>{ dragging=true; lastX=e.clientX; lastY=e.clientY; canvasArea.classList.add('dragging'); });
+  window.addEventListener('mouseup', ()=>{ dragging=false; canvasArea.classList.remove('dragging'); });
+  window.addEventListener('mousemove', (e)=>{
+    if(!dragging) return;
+    panX += (e.clientX-lastX); panY += (e.clientY-lastY);
+    lastX=e.clientX; lastY=e.clientY;
+    render();
+  });
+  canvasArea.addEventListener('wheel', (e)=>{
+    e.preventDefault();
+    const delta = e.deltaY>0 ? 0.9 : 1.1;
+    zoom = Math.min(Math.max(zoom*delta, 0.2), 3);
+    render();
+  }, {passive:false});
+
+  document.getElementById('mmZoomIn').addEventListener('click', ()=>{ zoom=Math.min(zoom*1.2,3); render(); });
+  document.getElementById('mmZoomOut').addEventListener('click', ()=>{ zoom=Math.max(zoom*0.8,0.2); render(); });
+  document.getElementById('mmZoomReset').addEventListener('click', fitView);
+
+  const expandBtn = document.getElementById('mmExpandBtn');
+  expandBtn.addEventListener('click', ()=>{
+    wrapEl.classList.toggle('expanded');
+    expandBtn.textContent = wrapEl.classList.contains('expanded') ? I18N[currentLang].reduir : I18N[currentLang].ampliar;
+    setTimeout(fitView, 60);
+  });
+  window.addEventListener('resize', ()=>{ fitView(); });
+
+  // render only once the slide becomes visible for the first time (correct sizing)
+  let mmInited = false;
+  function tryInit(){
+    if(mmInited) return;
+    if(wrapEl.offsetParent !== null){ mmInited = true; fitView(); updateDetail(); }
+  }
+  tryInit();
+  document.querySelectorAll('.navdots button, #prevBtn, #nextBtn, .index-item').forEach(el=>{
+    el.addEventListener('click', ()=>setTimeout(tryInit, 520));
+  });
+  window.addEventListener('keydown', ()=>setTimeout(tryInit, 520));
+
+  // exposats perquè el selector d'idioma pugui refrescar el widget sencer
+  window.mmRefreshLang = function(){
+    document.getElementById('mmZoomOut').setAttribute('aria-label', I18N[currentLang].zoomOutLbl);
+    document.getElementById('mmZoomReset').setAttribute('aria-label', I18N[currentLang].zoomResetLbl);
+    document.getElementById('mmZoomIn').setAttribute('aria-label', I18N[currentLang].zoomInLbl);
+    expandBtn.textContent = wrapEl.classList.contains('expanded') ? I18N[currentLang].reduir : I18N[currentLang].ampliar;
+    tryInit();
+    render();
+    updateDetail();
+  };
+})();
+</script>
+</body>
+</html>
